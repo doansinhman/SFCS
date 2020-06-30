@@ -1,3 +1,4 @@
+//add 1 line
 const sqlite3 = require('sqlite3');
 const db = new sqlite3.Database('./models/database.db');
 const bcrypt = require('bcrypt');
