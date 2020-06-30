@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>
+        <%= title %>
+    </title>
+    <% include ./include/header %>
+</head>
+
+<body>
+    <!-- <% include ./include/navBarUser %> -->
+    <form class="form-inline" name="search" action="javascript:void()" onsubmit="searchFood();">
+        <div class="col-3">
+            <div class="custom-control custom-radio">
+                <input type="radio" class="custom-control-input" id="foodName" name="searchOption" value="foodName" checked>
+                <label class="custom-control-label" for="foodName">Tên món</label>
+            </div>
+            <div class="custom-control custom-radio">
+                <input type="radio" class="custom-control-input" id="courtName" name="searchOption" value="courtName">
+                <label class="custom-control-label" for="courtName">Tên cửa hàng</label>
+            </div>
+            <div class="custom-control custom-radio">
+                <input type="radio" class="custom-control-input" id="foodType" name="searchOption" value="foodType">
+                <label class="custom-control-label" for="foodType">Loại món</label>
+            </div>
+        </div>
+        <div class="col-9">
+            <input class="form-control mr-sm-2" type="text" name="searchText" placeholder="Search">
+            <button class="btn btn-success" type="submit">Search</button>
+        </div>
+    </form>
+
+    <ul id="foodList" class="list-group">
+        <li class="list-group-item">
+            <img src="/images/food/9.jpg" class="mx-auto d-block foodImage">
+            <p class="foodId">🔹 7</p>
+            <p class="foodName">👉 Anh Huấn</p>
+            <p class="foodPrice">💸 5000đ</p>
+            <p class="foodDescription">❕ Huấn làm đó nha</p>
+            <button class="btn btn-primary" onclick="addFood(7);">✔ Thêm vào giỏ hàng</button>
+        </li>
+    </ul>
+
+    <div id="cart" onclick="showCart();">
+        🛒
+    </div>
+
+    <div id="myModal" class="modal">
+
+        <!-- Modal content -->
+        <div class="modal-content">
+            <div>
+                <h5>Giỏ hàng</h5>
+            </div>
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Đơn giá</th>
+                        <th>Số lượng</th>
+                        <th>Thành tiền</th>
+                    </tr>
+                </thead>
+                <tbody id="foodChosen">
+                    <tr>
+                        <td>1</td>
+                        <td>Cơm</td>
+                        <td>10000</td>
+                        <td>2</td>
+                        <td>20000</td>
+                    </tr>
+
+                    <tr class="table-primary">
+                        <td>Tổng cộng</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>20000</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div>
+                <button class="btn btn-primary" onclick="window.location.href='/order'">Đặt hàng</button>
+                <button class="btn btn-danger" onclick="deleteCart();">Xóa giỏ hàng</button>
+                <button class="btn btn-secondary" onclick="closeModal();">Hủy</button>
+            </div>
+        </div>
+
+    </div>
+</body>
+<script>
+    var FOOD_LIST = [];
+
+    function renderFood(arr) {
+        FOOD_LIST = arr;
+        let foodList = $("#foodList");
+        foodList.empty();
+        let len = arr.length;
+        for (let i = 0; i < len; i++)
+            if (arr[i].available) {
+                foodList.append('<li class="list-group-item">\
+                                    <img src="/images/food/' + arr[i].id + '.jpg" class="mx-auto d-block foodImage">\
+                                    <p class="foodId">🔹 ' + arr[i].id + '</p>\
+                                    <p class="foodName">👉 ' + arr[i].name + '</p>\
+                                    <p class="foodPrice">💸 ' + arr[i].price + '</p>\
+                                    <p class="foodDescription">❕ ' + arr[i].description + '</p>\
+                                    <button class="btn btn-primary" onclick="addFood(' + i + ');">✔ Thêm vào giỏ hàng</button>\
+                                </li>');
+            }
+    }
+
+    function searchFood() {
+        if (document.search.searchOption.value && document.search.searchText.value != '') {
+            let searchOption = document.search.searchOption.value;
+            $.post("/food", {
+                    target: searchOption,
+                    value: document.search.searchText.value
+                },
+                function(arr, status) {
+                    //console.log(arr);
+                    if (status == 'success' && arr) {
+                        renderFood(arr);
+                    }
+                });
+        }
+    }
+
+    function getAllFood() {
+        $.post("/food", {
+                target: "all"
+            },
+            function(arr, status) {
+                //console.log(arr);
+                if (status == 'success' && arr) {
+                    renderFood(arr);
+                }
+            });
+    }
+
+    function addFood(index) {
+        let cartString = localStorage.getItem("cart");
+        let cart = {};
+        try {
+            cart = JSON.parse(cartString);
+        } catch (e) {
+            //alert('catch 1 err');
+            cart = {};
+        }
+        if (!cart) {
+            cart = {};
+        }
+        try {
+            food = FOOD_LIST[index];
+            if (!cart["" + food.id]) {
+                cart["" + food.id] = {
+                    name: food.name,
+                    price: food.price,
+                    count: 1
+                }
+            } else {
+                cart["" + food.id].count += 1;
+            }
+            localStorage.setItem("cart", JSON.stringify(cart));
+        } catch (e) {
+            //alert('catch 2 err');
+            cart = {}
+        }
+    }
+
+    function deleteCart() {
+        localStorage.removeItem("cart");
+        closeModal();
+    }
+
+    function showCart() {
+        let cartString = localStorage.getItem("cart");
+        let cart = {};
+        try {
+            cart = JSON.parse(cartString);
+
+            if (!cart) {
+                cart = {};
+            }
+            let foodChosen = $("#foodChosen");
+            foodChosen.empty();
+            let amount = 0;
+            let empty = true;
+            for (let key in cart)
+                if (cart[key].count > 0) {
+                    empty = false;
+                    amount += cart[key].price * cart[key].count;
+                    foodChosen.append('<tr>\
+                            <td>' + key + '</td>\
+                            <td>' + cart[key].name + '</td>\
+                            <td>' + cart[key].price + '</td>\
+                            <td>' + cart[key].count + '</td>\
+                            <td>' + cart[key].price * cart[key].count + '</td>\
+                        </tr>');
+                }
+            if (empty) {
+                foodChosen.append('<tr class="table-warning"><td>Giỏ hàng rỗng</td><td></td><td></td><td></td><td></td></tr>');
+            } else {
+                foodChosen.append('<tr class="table-primary">\
+                                <td></td>\
+                                <td></td>\
+                                <td></td>\
+                                <td><strong>Tổng cộng</strong></td>\
+                                <td><strong>' + amount + '</strong></td>\
+                            </tr>');
+            }
+        } catch (e) {
+            alert('catch 1 err');
+            cart = {};
+        }
+
+
+        openModal();
+    }
+
+    function openModal() {
+        // When the user clicks on <span> (x), close the modal
+        modal.style.display = "block";
+    }
+
+    function closeModal() {
+        // When the user clicks on <span> (x), close the modal
+        modal.style.display = "none";
+    }
+
+    // Get the modal
+    var modal = document.getElementById("myModal");
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+    getAllFood();
+</script>
+
+</html>
