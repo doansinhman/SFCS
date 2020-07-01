@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var model = require('../models/model');
+var utility = require('./utility');
 
 /* GET users listing. */
 function isMemberLoggingIn(req) {
@@ -24,7 +25,7 @@ router.post('/login', async function(req, res, next) {
     if (isMemberLoggingIn(req))
         res.redirect('/member/dashboard');
     else {
-        let user = await model.loginMember(req.body.user_name, req.body.password);
+        let user = await utility.Member.login(req.body.user_name, req.body.password);
         if (!user) {
             res.json(false);
         } else {

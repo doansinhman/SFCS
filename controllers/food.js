@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var model = require('../models/model');
+var utility = require('./utility');
 
 var formidable = require('formidable');
 var mv = require('mv');
@@ -12,32 +13,38 @@ function isVendorLoggingIn(req) {
 }
 router.post('/', async function(req, res, next) {
     let data = req.body;
-    //console.log(data);
-    if (data.target == 'all') {
-        //response all food
-        res.json(await model.getAllFood());
-    } else if (data.target == 'court_id') {
-        //response all food of court logging
-        if (isVendorLoggingIn(req)) {
-            res.json(await model.getFoodByCourtId(req.session.userId));
-        } else {
-            res.json(null);
-        }
-    } else if (data.target == 'id') {
-        //response food has food_id
-    } else if (data.target == 'foodName') {
-        res.json(await model.getFoodByFoodName(data.value));
-    } else if (data.target == 'courtName') {
-        res.json(await model.getFoodByCourtName(data.value));
-    } else if (data.target == 'foodType') {
-        res.json(await model.getFoodByFoodType(data.value));
-    } else res.json(null);
+    switch (data.target) {
+        case 'all':
+            res.json(await utility.Food.getAllFoods());
+            break;
+        case 'court_id':
+            if (isVendorLoggingIn(req)) {
+                res.json(await utility.Food.getFoodsByCourtId(req.session.userId));
+            } else {
+                res.json(null);
+            }
+            break;
+        case 'id':
+            res.json(await utility.Food.getFoodById(data.value));
+            break;
+        case 'foodName':
+            res.json(await utility.Food.getFoodsByFoodName(data.value));
+            break;
+        case 'courtName':
+            res.json(await utility.Food.getFoodsByCourtName(data.value));
+            break;
+        case 'foodType':
+            res.json(await utility.Food.getFoodsByFoodType(data.value));
+            break;
+        default:
+            break;
+    }
 });
 
 router.post('/delete', async function(req, res, next) {
     if (isVendorLoggingIn(req) && req.body.id) {
         let court_id = req.session.userId;
-        let success = await model.deleteFood(req.body.id, court_id);
+        let success = await utility.Food.deleteFood(req.body.id, court_id);
         if (success) {
             //TODO: delete old image.
             fs.unlink('./public/images/food/' + req.body.id + '.jpg', (err) => {
@@ -55,12 +62,12 @@ router.post('/delete', async function(req, res, next) {
 
 router.post('/update', async function(req, res, next) {
     if (isVendorLoggingIn(req)) {
-        console.log('yes');
+        //console.log('yes');
         var form = new formidable.IncomingForm();
         form.parse(req, async function(err, fields, files) {
-            console.log(fields);
+            //console.log(fields);
             if (fields.name && fields.price && fields.available && fields.type && fields.description && fields.court_id == req.session.userId) {
-                let ret = await model.updateFood(fields);
+                let ret = await utility.Food.updateFood(fields);
                 if (!ret.success) {
                     return res.redirect('/vendor/menu');
                 } else {

@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var model = require('../models/model');
+var utility = require('./utility');
 
 var formidable = require('formidable');
 var mv = require('mv');
@@ -28,7 +29,7 @@ router.post('/login', async function(req, res, next) {
     if (isVendorLoggingIn(req))
         res.redirect('/vendor/dashboard');
     else {
-        let user = await model.loginVendor(req.body.user_name, req.body.password);
+        let user = await utility.Vendor.login(req.body.user_name, req.body.password);
         if (!user) {
             res.json(false)
         } else {
@@ -65,7 +66,7 @@ router.post('/menu/', async function(req, res, next) {
         var form = new formidable.IncomingForm();
         form.parse(req, async function(err, fields, files) {
             if (fields.name && fields.price && fields.type && fields.description) {
-                let ret = await model.createFood(fields, req.session.userId);
+                let ret = await utility.Food.createFood(fields, req.session.userId);
                 if (!ret.success) {
                     res.redirect('/vendor/menu');
                 } else {

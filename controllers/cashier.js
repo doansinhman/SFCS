@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var model = require('../models/model');
+var utility = require('./utility');
 
 /* GET users listing. */
 function isCashierLoggingIn(req) {
@@ -24,7 +25,7 @@ router.post('/login', async function(req, res, next) {
     if (isCashierLoggingIn(req))
         res.redirect('/cashier/dashboard');
     else {
-        let user = await model.loginCashier(req.body.user_name, req.body.password);
+        let user = await utility.Cashier.login(req.body.user_name, req.body.password);
         if (!user) {
             res.json(false);
         } else {
@@ -55,7 +56,7 @@ router.get('/order', function(req, res, next) {
 });
 router.post('/order', async function(req, res, next) {
     if (isCashierLoggingIn(req)) {
-        res.json(await model.getOrderById(req.body.id));
+        res.json(await utility.Order.getOrder(req.body.id));
     } else {
         res.json(null);
     }
@@ -63,7 +64,7 @@ router.post('/order', async function(req, res, next) {
 router.post('/confirm', async function(req, res, next) {
     console.log(req.session.userId);
     if (isCashierLoggingIn(req)) {
-        res.json(await model.confirmOrder(req.session.user_name, req.body.id, new Date().toISOString()));
+        res.json(await utility.Order.confirmOrder(req.session.user_name, req.body.id, new Date().toISOString()));
     } else {
         res.json(null);
     }

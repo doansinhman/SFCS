@@ -243,6 +243,7 @@ module.exports.updateFood = async(food) => {
     }).catch((error) => { console.log(error) });
 }
 module.exports.getFoodByFoodName = async(foodName) => {
+    /*
     return new Promise((resolve, reject) => {
         db.all('SELECT * FROM food WHERE name LIKE "' + foodName + '"', function(err, rows) {
             if (err) {
@@ -250,6 +251,18 @@ module.exports.getFoodByFoodName = async(foodName) => {
             } else if (rows)
                 resolve(rows);
             else
+                resolve(null);
+        });
+    }).catch((error) => { console.log(error) });
+    */
+    return new Promise((resolve, reject) => {
+        db.all('SELECT * FROM food', function(err, rows) {
+            if (err) {
+                console.log(err);
+            } else if (rows) {
+                let upper = foodName.toUpperCase();
+                resolve(rows.filter((row) => (upper.indexOf(row.name.toUpperCase()) > -1) || (row.name.toUpperCase().indexOf(upper) > -1)));
+            } else
                 resolve(null);
         });
     }).catch((error) => { console.log(error) });

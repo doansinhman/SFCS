@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var model = require('../models/model');
+var utility = require('./utility');
 
 /* GET users listing. */
 function isScreenLoggingIn(req) {
@@ -34,7 +35,7 @@ router.post('/spot-cash', async function(req, res, next) {
 
             let unavailable = [];
             for (key in cart) {
-                let food = await model.getFoodById(key);
+                let food = await utility.Food.getFoodById(key);
                 if (!food.available) {
                     unavailable.push(key);
                 }
@@ -43,7 +44,7 @@ router.post('/spot-cash', async function(req, res, next) {
                 res.json({ success: false, unavailable: unavailable });
                 console.log('unavailable');
             } else {
-                let id = await model.createOrder(cart, new Date().toISOString());
+                let id = await utility.Order.createOrder(cart, new Date().toISOString());
                 res.json({ success: true, id: id });
                 console.log('successs');
             }
