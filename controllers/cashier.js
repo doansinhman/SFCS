@@ -54,19 +54,4 @@ router.get('/order', function(req, res, next) {
         res.redirect('/cashier/login');
     }
 });
-router.post('/order', async function(req, res, next) {
-    if (isCashierLoggingIn(req)) {
-        res.json(await utility.Order.getOrder(req.body.id));
-    } else {
-        res.json(null);
-    }
-});
-router.post('/confirm', async function(req, res, next) {
-    console.log(req.session.userId);
-    if (isCashierLoggingIn(req)) {
-        res.json(await utility.Order.confirmOrder(req.session.user_name, req.body.id, new Date().toISOString()));
-    } else {
-        res.json(null);
-    }
-});
 module.exports = router;

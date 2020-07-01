@@ -41,6 +41,33 @@ router.post('/', async function(req, res, next) {
     }
 });
 
+router.post('/create', async function(req, res, next) {
+    //create new food
+    if (isVendorLoggingIn(req)) {
+        var form = new formidable.IncomingForm();
+        form.parse(req, async function(err, fields, files) {
+            if (fields.name && fields.price && fields.type && fields.description) {
+                let ret = await utility.Food.createFood(fields, req.session.userId);
+                if (!ret.success) {
+                    res.redirect('/vendor/menu');
+                } else {
+                    console.log('uploading');
+                    var oldpath = files.fileToUpload.path;
+                    var newpath = './public/images/food/' + ret.id + '.jpg';
+                    mv(oldpath, newpath, function(err) {
+                        if (err) throw err;
+                        res.redirect('/vendor/menu');
+                    });
+                }
+            } else {
+                res.redirect('/vendor/menu');
+            }
+        });
+    } else {
+        res.redirect('/vendor/login');
+    }
+});
+
 router.post('/delete', async function(req, res, next) {
     if (isVendorLoggingIn(req) && req.body.id) {
         let court_id = req.session.userId;

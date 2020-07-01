@@ -26,7 +26,7 @@
         </tbody>
     </table>
     <h6>Thêm món</h6>
-    <form name="createFood" method="POST" enctype="multipart/form-data" onsubmit="return checkCreateInput();">
+    <form name="createFood" action="/food/create" method="POST" enctype="multipart/form-data" onsubmit="return checkCreateInput();">
         <div class="form-group input-group">
             <input name="name" class="form-control" placeholder="Tên món" type="text" autocomplete="off" required>
         </div>

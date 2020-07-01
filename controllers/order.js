@@ -12,6 +12,10 @@ function isMemberLoggingIn(req) {
     return req.session.type == 'member';
 }
 
+function isCashierLoggingIn(req) {
+    return req.session.type == 'cashier';
+}
+
 router.get('/', function(req, res, next) {
     if (!isMemberLoggingIn(req) && !isScreenLoggingIn(req)) {
         res.render('alert', {
@@ -24,6 +28,21 @@ router.get('/', function(req, res, next) {
         res.render('./order/screen', {
             title: 'Thanh toán'
         })
+    }
+});
+router.post('/get', async function(req, res, next) {
+    if (isCashierLoggingIn(req)) {
+        res.json(await utility.Order.getOrder(req.body.id));
+    } else {
+        res.json(null);
+    }
+});
+router.post('/confirm', async function(req, res, next) {
+    //console.log(req.session.userId);
+    if (isCashierLoggingIn(req)) {
+        res.json(await utility.Order.confirmOrder(req.session.user_name, req.body.id, new Date().toISOString()));
+    } else {
+        res.json(null);
     }
 });
 router.post('/spot-cash', async function(req, res, next) {

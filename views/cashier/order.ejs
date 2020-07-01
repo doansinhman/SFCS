@@ -55,7 +55,7 @@
             return false;
         }
 
-        $.post("/cashier/order", {
+        $.post("/order/get", {
                 id: document.findOrder.orderId.value
             },
             function(data, status) {
@@ -114,7 +114,7 @@
 
     function confirmOrder(id) {
         if (confirm("Xác nhận đơn hàng có ID là " + id + "?")) {
-            $.post("/cashier/confirm", {
+            $.post("/order/confirm", {
                     id: document.findOrder.orderId.value
                 },
                 function(data, status) {

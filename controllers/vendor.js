@@ -59,32 +59,4 @@ router.get('/menu/', function(req, res, next) {
         res.redirect('/vendor/login');
     }
 });
-
-router.post('/menu/', async function(req, res, next) {
-    //create new food
-    if (isVendorLoggingIn(req)) {
-        var form = new formidable.IncomingForm();
-        form.parse(req, async function(err, fields, files) {
-            if (fields.name && fields.price && fields.type && fields.description) {
-                let ret = await utility.Food.createFood(fields, req.session.userId);
-                if (!ret.success) {
-                    res.redirect('/vendor/menu');
-                } else {
-                    console.log('uploading');
-                    var oldpath = files.fileToUpload.path;
-                    var newpath = './public/images/food/' + ret.id + '.jpg';
-                    mv(oldpath, newpath, function(err) {
-                        if (err) throw err;
-                        res.redirect('/vendor/menu');
-                    });
-                }
-            } else {
-                res.redirect('/vendor/menu');
-            }
-        });
-    } else {
-        res.redirect('/vendor/login');
-    }
-});
-
 module.exports = router;
