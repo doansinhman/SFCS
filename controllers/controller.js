@@ -36,5 +36,6 @@ router.use('/order', require('./order'));
 
 //for some POST request
 router.use('/food', require('./food'));
+router.use('/service', require('./service'));
 
 module.exports = router;

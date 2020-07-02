@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>
+        <%= title %>
+    </title>
+    <% include ../include/header %>
+</head>
+
+<body class="text-center">
+    <h1>Các món cần phục vụ</h1>
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Số lượng</th>
+            </tr>
+        </thead>
+        <tbody id="foodTable">
+        </tbody>
+    </table>
+</body>
+<script>
+    function updateFoodList() {
+        $.post("/service/get", {},
+            function(foodObj, status) {
+                //if (status == 'success')
+                //console.log(data);
+                let foodTable = $('#foodTable');
+                for (foodId in foodObj) {
+                    foodTable.append('<tr>\
+                                        <td>' + foodId + '</td>\
+                                        <td>' + foodObj[foodId].name + '</td>\
+                                        <td>' + foodObj[foodId].count + '</td>\
+                                    </tr>');
+                }
+            });
+    }
+    updateFoodList();
+</script>
+
+</html>

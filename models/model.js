@@ -101,6 +101,24 @@ module.exports.createCashier = async(cashier) => {
     }).catch((error) => { console.log(error) });
 };
 
+module.exports.createCook = async(cook) => {
+    let hash = bcrypt.hashSync(cook.password, saltRounds);
+
+    let params = [cook.court_id, cook.user_name, hash];
+
+    return new Promise((resolve, reject) => {
+        db.run('INSERT INTO cook VALUES (?, ?, ?)', params,
+            function(err) {
+                if (err) {
+                    resolve(false);
+                    console.log(err);
+                } else
+                    resolve(true);
+            }
+        );
+    }).catch((error) => { console.log(error) });
+};
+
 module.exports.loginMember = async(user_name, password) => {
     return new Promise((resolve, reject) => {
         db.all('SELECT * FROM member WHERE user_name = "' + user_name + '"', function(err, rows) {
@@ -148,6 +166,17 @@ module.exports.loginScreen = async(user_name, password) => {
 module.exports.loginCashier = async(user_name, password) => {
     return new Promise((resolve, reject) => {
         db.all('SELECT * FROM cashier WHERE user_name = "' + user_name + '"', function(err, rows) {
+            if (err || !rows || !rows[0]) {
+                resolve(null);
+            } else if (rows && bcrypt.compareSync(password, rows[0].password))
+                resolve(rows[0]);
+            resolve(null);
+        });
+    }).catch((error) => { console.log(error) });
+};
+module.exports.loginCook = async(user_name, password) => {
+    return new Promise((resolve, reject) => {
+        db.all('SELECT * FROM cook WHERE user_name = "' + user_name + '"', function(err, rows) {
             if (err || !rows || !rows[0]) {
                 resolve(null);
             } else if (rows && bcrypt.compareSync(password, rows[0].password))
@@ -357,8 +386,8 @@ module.exports.confirmOrder = async(cashier_user_name, order_id, date) => {
     return new Promise(async(resolve, reject) => {
         let order = await module.exports.getOrderById(order_id);
         if (order && order.paid == 0) {
-            let bool1 = new Promise((resolve2, reject2) => {
-                db.run('UPDATE "order" SET paid=1 WHERE id=' + order_id, function(err) {
+            let bool1 = await new Promise((resolve2, reject2) => {
+                db.run('UPDATE "order" SET paid=1 WHERE paid=0 AND id=' + order_id, function(err) {
                     if (err) {
                         console.log(err);
                         resolve2(false);
@@ -366,7 +395,7 @@ module.exports.confirmOrder = async(cashier_user_name, order_id, date) => {
                 });
             });
 
-            let bool2 = new Promise((resolve2, reject2) => {
+            let bool2 = await new Promise((resolve2, reject2) => {
                 db.run('INSERT INTO confirm VALUES(?, ?, ?)', [cashier_user_name, order_id, date], function(err) {
                     if (err) {
                         console.log(err);
@@ -374,8 +403,61 @@ module.exports.confirmOrder = async(cashier_user_name, order_id, date) => {
                     } else resolve2(true);
                 });
             });
+
+            //create new service record
+            if (bool1 && bool2) {
+                let remain = await new Promise((resolve, reject) => {
+                    db.all('SELECT list FROM "order" WHERE id=' + order_id, function(err, rows) {
+                        if (!err && rows && rows[0]) {
+                            resolve(rows[0].list);
+                        } else {
+                            console.log(err);
+                            resolve(null);
+                        }
+                    });
+                });
+                db.run('INSERT INTO service VALUES(?, ?)', [order_id, remain], function(err) {
+                    if (err) {
+                        console.log(err);
+                        resolve(false);
+                    } else resolve(true);
+                });
+            }
             resolve(bool1 && bool2);
         } else
             resolve(false);
     });
+};
+
+module.exports.getFoodsNeedToServiceOfVendor = async(court_id) => {
+    return new Promise((resolve, reject) => {
+        db.all('SELECT * FROM service WHERE remain IS NOT NULL AND remain!="{}"', async function(err, rows) {
+            if (err) {
+                console.log(err);
+                resolve(null);
+            } else {
+                if (!rows) {
+                    resolve(null);
+                }
+
+                let arr = {};
+                let len = rows.length;
+                for (let i = 0; i < len; i++) {
+                    let remain = JSON.parse(rows[i].remain);
+                    for (foodId in remain) {
+                        let food = await module.exports.getFoodById(foodId);
+                        if (food.court_id == court_id) {
+                            if (arr['' + foodId]) {
+                                arr['' + foodId].count += remain[foodId];
+                            } else {
+                                arr['' + foodId] = { name: food.name, count: remain[foodId] };
+                            }
+                        }
+                    }
+                }
+                resolve(arr);
+            }
+        });
+    });
+
 };

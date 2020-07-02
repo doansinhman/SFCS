@@ -112,11 +112,10 @@ module.exports.Cook = class {
      * @return {Cook} Cook object or null
      */
     static async login(user_name, password) {
-        return await model.loginVendor(user_name, password);
+        return await model.loginCook(user_name, password);
     }
     static async createCook(cook) {
-        //TODO
-        return null;
+        return await model.createCook(cook);
     }
     static async deleteCook(cook) {
         //TODO
@@ -182,7 +181,7 @@ module.exports.Order = class {
     /**
      * 
      * @param {Number} id 
-     * @return {Order} Detail order of this id
+     * @return {cart: {foodId: {name: String, price: Number, count: Number}}, date: Date, paid: Boolean} Detail order of this id
      */
     static async getOrder(id) {
         return await model.getOrderById(id);
@@ -232,4 +231,20 @@ module.exports.Manager = class {
 
     //TODO
     //get report methods
+}
+
+module.exports.Service = class {
+    constructor(obj) {
+        this.order_id = obj.order_id;
+        this.remain = obj.remain;
+    }
+
+    /**
+     * 
+     * @param {Number} court_id
+     * @returns {Object} {foodId: {foodName:String, count:Number}}
+     */
+    static async getFoodsNeedToServiceOfVendor(court_id) {
+        return await model.getFoodsNeedToServiceOfVendor(court_id);
+    }
 }
