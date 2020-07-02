@@ -18,5 +18,18 @@ router.post('/get', async function(req, res, next) {
         res.json(null);
     }
 });
+router.post('/put', async function(req, res, next) {
+    if (isCookLoggingIn(req)) {
+        let data = req.body;
+        let food = await utility.Food.getFoodById(data.foodId);
+        if (food.court_id == req.session.user.court_id) {
+            res.json(await utility.Service.submitPreparedFood(data.foodId, data.count));
+        } else {
+            res.json(false);
+        }
+    } else {
+        res.json(false);
+    }
+});
 
 module.exports = router;

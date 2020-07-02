@@ -2,6 +2,7 @@
 const sqlite3 = require('sqlite3');
 const db = new sqlite3.Database('./models/database.db');
 const bcrypt = require('bcrypt');
+const { Locked } = require('http-errors');
 const saltRounds = 10;
 
 
@@ -459,5 +460,59 @@ module.exports.getFoodsNeedToServiceOfVendor = async(court_id) => {
             }
         });
     });
+};
 
+module.exports.submitPreparedFood = async(foodId, count) => {
+    return new Promise((resolve, reject) => {
+        db.all('SELECT * FROM service WHERE remain IS NOT NULL AND remain!="{}"', async function(err, rows) {
+            if (err) {
+                console.log(err);
+                resolve(false);
+            } else {
+                if (!rows) {
+                    resolve(false);
+                }
+
+                let len = rows.length;
+                for (let i = 0; i < len; i++) {
+                    let remain = JSON.parse(rows[i].remain);
+                    if (remain['' + foodId]) {
+                        if (remain['' + foodId] > count) {
+                            remain['' + foodId] -= count;
+                            count = 0;
+                        } else if (remain['' + foodId] == count) {
+                            delete remain['' + foodId];
+                            count = 0;
+                        } else if (remain['' + foodId] < count) {
+                            count -= remain['' + foodId];
+                            delete remain['' + foodId];
+                        }
+                        //update db
+                        db.run('UPDATE service SET remain=\'' + JSON.stringify(remain) + '\' WHERE order_id=' + rows[i].order_id);
+
+                        if (count == 0) {
+                            break;
+                        }
+                    }
+                }
+                resolve(count == 0);
+            }
+        });
+    });
+};
+
+module.exports.getOrderStatus = async() => {
+    return new Promise((resolve, reject) => {
+        db.all('SELECT * FROM service ORDER BY order_id DESC LIMIT 100', function(err, rows) {
+            if (err || !rows || !rows[0]) {
+                resolve(null);
+            } else {
+                let len = rows.length;
+                for (let i = 0; i < len; i++) {
+                    rows[i] = { id: rows[i].order_id, ready: rows[i].remain == '{}' }
+                }
+                resolve(rows);
+            }
+        });
+    });
 };

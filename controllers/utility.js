@@ -200,6 +200,10 @@ module.exports.Order = class {
     static async createOrder(cart, date) {
         return await model.createOrder(cart, date);
     }
+
+    static async getOrderStatus() {
+        return await model.getOrderStatus();
+    }
 }
 
 module.exports.Confirmation = class {
@@ -246,5 +250,15 @@ module.exports.Service = class {
      */
     static async getFoodsNeedToServiceOfVendor(court_id) {
         return await model.getFoodsNeedToServiceOfVendor(court_id);
+    }
+
+    /**
+     * 
+     * @param {Number} foodId 
+     * @param {Number} count 
+     * @return {Boolean} Status after change data in service table
+     */
+    static async submitPreparedFood(foodId, count) {
+        return await model.submitPreparedFood(foodId, count);
     }
 }

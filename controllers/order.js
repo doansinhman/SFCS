@@ -30,6 +30,9 @@ router.get('/', function(req, res, next) {
         })
     }
 });
+router.get('/status', function(req, res, next) {
+    res.render('./order/status', { title: 'Trạng thái đơn hàng' });
+});
 router.post('/get', async function(req, res, next) {
     if (isCashierLoggingIn(req)) {
         res.json(await utility.Order.getOrder(req.body.id));
@@ -77,4 +80,7 @@ router.post('/spot-cash', async function(req, res, next) {
     }
 });
 
+router.post('/status', async function(req, res, next) {
+    res.json(await utility.Order.getOrderStatus());
+});
 module.exports = router;
