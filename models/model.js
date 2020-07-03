@@ -226,16 +226,16 @@ module.exports.createFood = async(food, court_id) => {
             function(err) {
                 if (err) {
                     console.log(err);
-                    resolve({ success: false /*, message: "Một nhà cung cấp không được có 2 sản phẩm cùng tên."*/ });
+                    resolve(-1 /*, message: "Một nhà cung cấp không được có 2 sản phẩm cùng tên."*/ );
                 } else {
                     db.all('SELECT id, court_id FROM food WHERE (name="' + food.name + '")', function(err, rows) {
                         if (err) {
                             console.log(err);
-                            resolve({ success: false /*, message: "Lỗi không xác định."*/ });
+                            resolve(-2 /*, message: "Lỗi không xác định."*/ );
                         } else {
                             console.log(('get id successfully'))
                             if (rows && rows[0]) {
-                                resolve({ success: true /*, message: "Tạo món thành công."*/ , id: rows[0].id });
+                                resolve( /*, message: "Tạo món thành công."*/ rows[0].id);
                             }
                         }
                     });
@@ -264,10 +264,10 @@ module.exports.updateFood = async(food) => {
                 WHERE (id=' + food.id + ') AND (court_id=' + food.court_id + ')',
             function(err) {
                 if (err) {
-                    resolve({ success: false });
+                    resolve(false);
                     console.log(err);
                 } else
-                    resolve({ success: true });
+                    resolve(true);
             }
         );
     }).catch((error) => { console.log(error) });
