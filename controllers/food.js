@@ -47,13 +47,13 @@ router.post('/create', async function(req, res, next) {
         var form = new formidable.IncomingForm();
         form.parse(req, async function(err, fields, files) {
             if (fields.name && fields.price && fields.type && fields.description) {
-                let ret = await utility.Food.createFood(fields, req.session.userId);
-                if (!ret.success) {
+                let id = await utility.Food.createFood(fields, req.session.userId);
+                if (id < 0) {
                     res.redirect('/vendor/menu');
                 } else {
                     console.log('uploading');
                     var oldpath = files.fileToUpload.path;
-                    var newpath = './public/images/food/' + ret.id + '.jpg';
+                    var newpath = './public/images/food/' + id + '.jpg';
                     mv(oldpath, newpath, function(err) {
                         if (err) throw err;
                         res.redirect('/vendor/menu');
@@ -94,8 +94,8 @@ router.post('/update', async function(req, res, next) {
         form.parse(req, async function(err, fields, files) {
             //console.log(fields);
             if (fields.name && fields.price && fields.available && fields.type && fields.description && fields.court_id == req.session.userId) {
-                let ret = await utility.Food.updateFood(fields);
-                if (!ret.success) {
+                let success = await utility.Food.updateFood(fields);
+                if (!success) {
                     return res.redirect('/vendor/menu');
                 } else {
                     if (!files.fileToUpload.size) {

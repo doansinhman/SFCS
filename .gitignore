@@ -7,3 +7,4 @@ jspm_packages
 
 # Food thumbnails
 public/images/food
+models/*.db

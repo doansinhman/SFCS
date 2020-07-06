@@ -7,6 +7,8 @@
 //RUN 1 TIME
 /*
 var model = require('../models/model');
+model.createCook({ court_id: 1, user_name: 'cook01', password: '123456' });
+
 model.createVendor({
     id: 1,
     full_name: "Nguyễn Luân",
