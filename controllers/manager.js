@@ -9,7 +9,43 @@ var fs = require('fs');
 function isManagerLoggingIn(req) {
     return req.session.type == 'manager';
 }
+
+function getAllUserByType(type)
+{
+    return model.getUsersByType(type);
+}
+// API listing
+///////////////////////////////////////////////////////////////////
+router.post('/api/GetMember', async function(req, res, next)
+{
+    let scr = await getAllUserByType('member');
+    if (isManagerLoggingIn(req))
+    {
+        scr.forEach(user => {
+            user.password = '';
+        });
+        res.json(scr);
+    }            
+    else console.log('Unauthorize!');
+})
+router.post('/api/DeleteMember', async function(req, res, next)
+{
+    let scr = await getAllUserByType('member');
+    if (isManagerLoggingIn(req))
+    {
+        scr.forEach(user => {
+            user.password = '';
+        });
+        res.json(scr);
+    }            
+    else 
+    {
+        res.json(false);
+    }
+})
+///////////////////////////////////////////////////////////////////////////
 router.get('/', function(req, res, next) {
+    console.log(req);
     if (isManagerLoggingIn(req))
         res.redirect('/manager/dashboard');
     else {
@@ -43,7 +79,7 @@ router.post('/login', async function(req, res, next) {
 
 router.get('/dashboard', function(req, res, next) {
     if (isManagerLoggingIn(req)) {
-        res.render('./manager/dashboard', { title: "Quản lí", h1: "Smart Food Court System", p: "Trang dành cho Quản lí", userType: req.session.type })
+        res.render('./manager/dashboard', { title: "Quản lí" , plt: "none",userType: req.session.type })
     } else {
         res.redirect('/manager/login');
     }
@@ -51,57 +87,49 @@ router.get('/dashboard', function(req, res, next) {
 
 router.get('/manage-screen', function(req, res, next) {
     if (isManagerLoggingIn(req)) {
-        res.render('./manager/dashboard', { title: "Quản lí Screen", h1:"", p:"", userType: req.session.type })
+        res.render('./manager/dashboard', { title: "Quản lí Screen", plt: 'screen', userType: req.session.type })
     } else {
         res.redirect('/manager/login');
     }
 });
 router.get('/manage-vendor', function(req, res, next) {
     if (isManagerLoggingIn(req)) {
-        res.render('./manager/dashboard', { title: "Quản lí Screen",  userType: req.session.type })
+        res.render('./manager/dashboard', { title: "Quản lí nhà cung cấp", plt: 'vendor',  userType: req.session.type })
     } else {
         res.redirect('/manager/login');
     }
 });
 router.get('/manage-cashier', function(req, res, next) {
     if (isManagerLoggingIn(req)) {
-        res.render('./manager/dashboard', { title: "Quản lí Screen",  userType: req.session.type })
+        res.render('./manager/dashboard', { title: "Quản lí thu ngân", plt:'cashier',  userType: req.session.type })
     } else {
         res.redirect('/manager/login');
     }
 });
 router.get('/manage-cook', function(req, res, next) {
     if (isManagerLoggingIn(req)) {
-        res.render('./manager/dashboard', { title: "Quản lí cook", userType: req.session.type })
+        res.render('./manager/dashboard', { title: "Quản lí đầu bếp", plt:'cook', userType: req.session.type })
     } else {
         res.redirect('/manager/login');
     }
 });
 
-//get report
-router.get('/report', async function(req, res){
-    if (isManagerLoggingIn(req)){
-        let report = await utility.Manager.getReport();
-
-        const csv = await JsonToCsv.parse(report, {fields : ['id', 'name', 'count', 'date', 'amount']});
-
-        fs.writeFile('report.csv', csv, function(err){
-            if (err) console.log(err);
-        });
-        console.log(report);
-        try {
-            res.render('./report' , {title: "Thống kê", report : report});
-        } catch (error) {
-            console.log(error);
-        }
-    }
-    else {
+router.get('/manage-member', async function(req, res, next) {
+    
+    if (isManagerLoggingIn(req)) {
+        
+        res.render('./manager/dashboard', { title: "Quản lí thành viên", plt: 'member', userType: req.session.type })
+    } else {
         res.redirect('/manager/login');
     }
 });
 
-router.get('/download', async function (req, res) {
-    res.download('./report.csv', 'report.csv');
-})
+router.get('/report', function(req, res, next) {
+    if (isManagerLoggingIn(req)) {
+        res.render('./manager/dashboard', { title: "Lấy báo cáo", plt: 'getReport', userType: req.session.type })
+    } else {
+        res.redirect('/manager/login');
+    }
+});
 
 module.exports = router;

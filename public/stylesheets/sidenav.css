@@ -24,6 +24,28 @@
   }
 
 .content {
-    margin-left: 180px; /* Same as the width of the sidebar */
+    margin-left: 180px; /* Same as the width of the sidenav */
     padding: 0px 10px;    
   }
+
+#user-table {
+  width: 100%;
+  background-color: darkgrey;
+}
+
+td , th , tr {
+  border: 1pt solid black;
+  padding: 10px;
+  text-align: center;
+}
+
+.btn-cp {
+  background-color: #4CAF50; /* Green */
+  border: none;
+  color: white;
+  padding: 5px 15px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  shape-outside: ellipse(1);
+}
