@@ -2,6 +2,7 @@
 const sqlite3 = require('sqlite3');
 const db = new sqlite3.Database('./models/database.db');
 const bcrypt = require('bcrypt');
+const cookieParser = require('cookie-parser');
 const saltRounds = 10;
 
 
@@ -377,5 +378,40 @@ module.exports.confirmOrder = async(cashier_user_name, order_id, date) => {
             resolve(bool1 && bool2);
         } else
             resolve(false);
+    });
+};
+//get report from database
+module.exports.getReport = async() => {
+    return new Promise((resolve, reject) => {
+        db.all('SELECT * FROM "order"', async function(err, rows) {
+            if (err) {
+                console.log(err);
+                resolve(null);
+            }
+            else {
+                let  report = [];
+                // report contain id, name, count, date, amount.
+                let count = 0;
+                for (let i = 0; i < rows.length; i++) {
+                    if (rows[i].paid == 1){
+                        let cart = JSON.parse(rows[i].list);
+                        for (const key in cart) {
+                            let food = await module.exports.getFoodById(key);
+                            report[count] = {
+                                id : key,
+                                name : food.name,
+                                count : cart[key],
+                                price : food.price,
+                                amount : food.price * cart[key],
+                                date : rows[i].date
+                            }
+                            count ++;
+                        }
+                    }
+                    else {continue;}
+                }
+                resolve(report);
+            }
+        });
     });
 };

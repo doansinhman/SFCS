@@ -3,6 +3,8 @@ var router = express.Router();
 var model = require('../models/model');
 var utility = require('./utility');
 
+var JsonToCsv = require('json2csv');
+var fs = require('fs');
 /* GET users listing. */
 function isManagerLoggingIn(req) {
     return req.session.type == 'manager';
@@ -50,4 +52,30 @@ router.get('/dashboard', function(req, res, next) {
 router.get('/manage-screen', function(req, res, next) {
 
 });
+
+//get report
+router.get('/report', async function(req, res){
+    if (isManagerLoggingIn(req)){
+        let report = await utility.Manager.getReport();
+
+        const csv = await JsonToCsv.parse(report, {fields : ['id', 'name', 'count', 'date', 'amount']});
+
+        fs.writeFile('report.csv', csv, function(err){
+            if (err) console.log(err);
+        });
+        console.log(report);
+        try {
+            res.render('./report' , {title: "Thống kê", report : report});
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    else {
+        res.redirect('/manager/login');
+    }
+});
+
+router.get('/download', async function (req, res) {
+    res.download('./report.csv', 'report.csv');
+})
 module.exports = router;

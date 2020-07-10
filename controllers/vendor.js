@@ -6,19 +6,20 @@ var utility = require('./utility');
 var formidable = require('formidable');
 var mv = require('mv');
 
-
+var JsonToCsv = require('json2csv');
+var fs = require('fs');
 /* GET users listing. */
 function isVendorLoggingIn(req) {
     return req.session.type == 'vendor';
 }
-router.get('/', function(req, res, next) {
+router.get('/', function(req, res) {
     if (isVendorLoggingIn(req))
         res.redirect('/vendor/dashboard');
     else {
         res.redirect('/vendor/login');
     }
 });
-router.get('/login', function(req, res, next) {
+router.get('/login', function(req, res) {
     if (isVendorLoggingIn(req))
         res.redirect('/vendor/dashboard');
     else {
@@ -43,7 +44,6 @@ router.post('/login', async function(req, res, next) {
         }
     }
 });
-
 router.get('/dashboard/', function(req, res, next) {
     if (isVendorLoggingIn(req)) {
         res.render('./vendor/dashboard', { title: "Nhà cung cấp", h1: "Smart Food Court System", p: "Trang dành cho nhà cung cấp", userType: req.session.type })
@@ -59,4 +59,30 @@ router.get('/menu/', function(req, res, next) {
         res.redirect('/vendor/login');
     }
 });
+
+router.get('/report', async function(req, res){
+    if (isVendorLoggingIn(req)){
+        let report = await utility.Vendor.getReport();
+
+        const csv = await JsonToCsv.parse(report, {fields : ['id', 'name', 'count', 'date', 'amount']});
+
+        fs.writeFile('report.csv', csv, function(err){
+            if (err) console.log(err);
+        });
+        console.log(report);
+        try {
+            res.render('./report' , {title: "Thống kê", report : report});
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    else {
+        res.redirect('/vendor/login');
+    }
+});
+
+router.get('/download', async function (req, res) {
+    res.download('./report.csv', 'report.csv');
+})
+
 module.exports = router;
