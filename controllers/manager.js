@@ -50,7 +50,32 @@ router.get('/dashboard', function(req, res, next) {
 });
 
 router.get('/manage-screen', function(req, res, next) {
-
+    if (isManagerLoggingIn(req)) {
+        res.render('./manager/dashboard', { title: "Quản lí Screen", h1:"", p:"", userType: req.session.type })
+    } else {
+        res.redirect('/manager/login');
+    }
+});
+router.get('/manage-vendor', function(req, res, next) {
+    if (isManagerLoggingIn(req)) {
+        res.render('./manager/dashboard', { title: "Quản lí Screen",  userType: req.session.type })
+    } else {
+        res.redirect('/manager/login');
+    }
+});
+router.get('/manage-cashier', function(req, res, next) {
+    if (isManagerLoggingIn(req)) {
+        res.render('./manager/dashboard', { title: "Quản lí Screen",  userType: req.session.type })
+    } else {
+        res.redirect('/manager/login');
+    }
+});
+router.get('/manage-cook', function(req, res, next) {
+    if (isManagerLoggingIn(req)) {
+        res.render('./manager/dashboard', { title: "Quản lí cook", userType: req.session.type })
+    } else {
+        res.redirect('/manager/login');
+    }
 });
 
 //get report
@@ -78,4 +103,5 @@ router.get('/report', async function(req, res){
 router.get('/download', async function (req, res) {
     res.download('./report.csv', 'report.csv');
 })
+
 module.exports = router;

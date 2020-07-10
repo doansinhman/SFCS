@@ -167,3 +167,13 @@ html {
 .payment-img {
     width: 100px
 }
+
+.order-ready {
+    color: #00cc00;
+    font-size: 20px;
+}
+
+.order-pending {
+    color: #ffcc00;
+    font-size: 20px;
+}

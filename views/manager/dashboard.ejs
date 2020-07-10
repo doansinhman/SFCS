@@ -6,33 +6,39 @@
         <%= title %>
     </title>
     <% include ../include/header %>
+    <link rel='stylesheet' href='/stylesheets/sidenav.css'>
+    <script>
+        $(document).ready(function() {
+            let navLock = $('#nav-lock');
+            let navReal = $('#nav-real');
+            let imgLock = $('#img-lock');
+            let imgReal = $('#img-real');
+            navReal.hide();
+            imgReal.click(function() {
+                $(document.getElementsByClassName('sidenav')).css('padding-top', '30pt');
+            });
+            imgLock.click(function() {
+                $(document.getElementsByClassName('sidenav')).css('padding-top', '50pt');
+            });
+        });
+    </script>
 </head>
 
 <body>
     <% include ../include/navBarUser %>
-        <% include ../include/bodyCover %>
-            <nav class="navbar navbar-expand-sm bg-light">
-                <ul class="">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/manager/manage-member">Quản lí Thành viên</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/manager/manage-vendor">Quản lí Nhà cung cấp</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/manager/manage-cashier">Quản lí Thu ngân</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/manager/manage-cook">Quản lí Đầu bếp</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/manager/manage-screen">Quản lí Touch screen</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/manager/report">Thống kê</a>
-                    </li>
-                </ul>
-            </nav>
+        
+    <div class="sidenav">
+        <a class="nav-link" href="/manager/manage-member">Quản lí Thành viên</a>
+        <a class="nav-link" href="/manager/manage-vendor">Quản lí Nhà cung cấp</a>
+        <a class="nav-link" href="/manager/manage-cashier">Quản lí Thu ngân</a>
+        <a class="nav-link" href="/manager/manage-cook">Quản lí Đầu bếp</a>
+        <a class="nav-link" href="/manager/manage-screen">Quản lí Touch screen</a>
+        <a class="nav-link" href="/manager/report">Thống kê</a>
+    </div>
+    <div class="content hero-image">
+        
+    </div>
+            
 </body>
 
 <script>

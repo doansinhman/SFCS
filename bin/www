@@ -7,6 +7,8 @@
 //RUN 1 TIME
 /*
 var model = require('../models/model');
+model.createCook({ court_id: 1, user_name: 'cook01', password: '123456' });
+
 model.createVendor({
     id: 1,
     full_name: "Nguyễn Luân",
@@ -19,12 +21,12 @@ model.createVendor({
     password: '654321'
 });
 */
-/*var model = require('../models/model');
-model.createManager({
-    user_name: 'admin',
-    password: 'admin'
-});
-*/
+// var model = require('../models/model');
+// model.createManager({
+//     user_name: 'admin',
+//     password: 'admin'
+// });
+
 /*var model = require('../models/model');
 model.createScreen({
     user_name: 'screen1',
