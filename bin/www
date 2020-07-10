@@ -38,6 +38,7 @@ model.createCashier({
     user_name: 'cashier1',
     password: '123456'
 });*/
+var model = require('../models/model');
 
 var app = require('../app');
 var debug = require('debug')('sfcs:server');
