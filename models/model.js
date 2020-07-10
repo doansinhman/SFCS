@@ -436,28 +436,26 @@ module.exports.getReport = async() => {
             if (err) {
                 console.log(err);
                 resolve(null);
-            }
-            else {
-                let  report = [];
+            } else {
+                let report = [];
                 // report contain id, name, count, date, amount.
                 let count = 0;
                 for (let i = 0; i < rows.length; i++) {
-                    if (rows[i].paid == 1){
+                    if (rows[i].paid == 1) {
                         let cart = JSON.parse(rows[i].list);
                         for (const key in cart) {
                             let food = await module.exports.getFoodById(key);
                             report[count] = {
-                                id : key,
-                                name : food.name,
-                                count : cart[key],
-                                price : food.price,
-                                amount : food.price * cart[key],
-                                date : rows[i].date
+                                id: key,
+                                name: food.name,
+                                count: cart[key],
+                                price: food.price,
+                                amount: food.price * cart[key],
+                                date: rows[i].date
                             }
-                            count ++;
+                            count++;
                         }
-                    }
-                    else {continue;}
+                    } else { continue; }
                 }
                 resolve(report);
             }
@@ -553,115 +551,85 @@ module.exports.getOrderStatus = async() => {
 };
 
 // For manager only
-var genHash = password => bcrypt.hashSync(password, saltRounds);    
+var genHash = password => bcrypt.hashSync(password, saltRounds);
 const op = '\''
-module.exports.getUsersByType = async(type) =>
-{
-    return new Promise((resolve, reject) =>
-    {
-        db.all('SELECT * FROM ' + type, 
-                (err, rows) =>
-                {
-                    if (err || !rows || !rows[0]) {
-                        resolve(null);
-                    }
-                    else
-                    {
-                        resolve(rows);
-                    }
+module.exports.getUsersByType = async(type) => {
+    return new Promise((resolve, reject) => {
+        db.all('SELECT * FROM ' + type,
+            (err, rows) => {
+                if (err || !rows || !rows[0]) {
+                    resolve(null);
+                } else {
+                    resolve(rows);
                 }
+            }
         )
     });
 }
-module.exports.loadMemberData = async(user_name) =>
-{
-    return new Promise((resolve, reject) => 
-        {
-            var str = 'SELECT * FROM member WHERE user_name=\'' + user_name + '\'';
-            db.all(str, (err, row) =>
-                {
-                    if (err || !row || !row[0]) {
-                        console.log(str);
-                        resolve(null);
-                    }
-                    else
-                    {
-                        resolve(row[0]);
-                    }
-                }
-            )
-        }
-    )
-};
-module.exports.updateMemberData = async(user_name, data) => 
-{
-    return new Promise((resolve, reject) => 
-        {
-            var str = 'SELECT * FROM member WHERE user_name=\'' + user_name + '\'';
-            db.all(str, (err, row) =>
-                {
-                    if (err || !row || !row[0]) {
-                        console.log(str);
-                        reject(new Error('Cannot find user with that user_name'));
-                    }
-                    else
-                    {
-                        resolve(row[0]);
-                    }
-                }
-            )
-        }
-    )
-    .then
-    (
-        user => 
-        {
-            console.log();
-            
-            user.full_name = data.full_name;
-            user.birthday = data.birthday;
-            user.phone_number = data.phone_number;
-            user.email = data.email;
-            
-            var x = () => 
-            {
-                return 'full_name=' + op + user.full_name + op + 
-                ',birthday=' + op + user.birthday + op +
-                ',phone_number=' + user.phone_number +
-                ',email=' + op + user.email + op;
+module.exports.loadMemberData = async(user_name) => {
+    return new Promise((resolve, reject) => {
+        var str = 'SELECT * FROM member WHERE user_name=\'' + user_name + '\'';
+        db.all(str, (err, row) => {
+            if (err || !row || !row[0]) {
+                console.log(str);
+                resolve(null);
+            } else {
+                resolve(row[0]);
             }
-
-            var str = 'UPDATE member SET ' 
-            + x()
-            + ' WHERE id = ' + user.id;          
-            db.all(str, (err) => (new Error(err)));
-        }
-    )
-    .catch(reason => console.log(reason));
-
-}
-module.exports.deleteMember = async(user_name) => 
-{
-    return new Promise((resolve, reject) => 
-        {
+        })
+    })
+};
+module.exports.updateMemberData = async(user_name, data) => {
+    return new Promise((resolve, reject) => {
             var str = 'SELECT * FROM member WHERE user_name=\'' + user_name + '\'';
-            db.all(str, (err, rows) =>
-                {
-                    if (err || !rows || !rows[0]) {
-                        reject(new Error('Cannot find user with that user_name : ' + user_name));
-                    }
-                    else
-                    {
-                        var rem_str = 'DELETE FROM member WHERE id=' + rows[0].id
-                        db.all(rem_str, (err, rows) => 
-                        {
-                            reject(new Error('Error occured when remove ' + user_name + ' from db'));
-                        });
-                        resolve();
-                    }
+            db.all(str, (err, row) => {
+                if (err || !row || !row[0]) {
+                    console.log(str);
+                    reject(new Error('Cannot find user with that user_name'));
+                } else {
+                    resolve(row[0]);
                 }
-            )
-        }
-    ).catch(reason => console.log(reason));
-}
+            })
+        })
+        .then(
+            user => {
+                console.log();
 
+                user.full_name = data.full_name;
+                user.birthday = data.birthday;
+                user.phone_number = data.phone_number;
+                user.email = data.email;
+
+                var x = () => {
+                    return 'full_name=' + op + user.full_name + op +
+                        ',birthday=' + op + user.birthday + op +
+                        ',phone_number=' + user.phone_number +
+                        ',email=' + op + user.email + op;
+                }
+
+                var str = 'UPDATE member SET ' +
+                    x() +
+                    ' WHERE id = ' + user.id;
+                db.all(str, (err) => (new Error(err)));
+            }
+        )
+        .catch(reason => console.log(reason));
+
+}
+module.exports.deleteMember = async(user_name) => {
+    return new Promise((resolve, reject) => {
+        var str = 'SELECT * FROM member WHERE user_name=\'' + user_name + '\'';
+        db.all(str, (err, rows) => {
+            if (err || !rows || !rows[0]) {
+                reject(new Error('Cannot find user with that user_name : ' + user_name));
+            } else {
+                var rem_str = 'DELETE FROM member WHERE id=' + rows[0].id
+                db.run(rem_str, (err) => {
+                    if (err)
+                        reject(new Error('Error occured when remove ' + user_name + ' from db'));
+                });
+                resolve();
+            }
+        })
+    }).catch(reason => console.log(reason));
+}

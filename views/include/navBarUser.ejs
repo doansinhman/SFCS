@@ -15,35 +15,31 @@
             <a class="nav-link" href="/menu">Thực đơn</a>
         </li>
 
-        <%if (!userType) { 
-            %>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
                     Đăng nhập
                 </a>
-                <div class="dropdown-menu">
-                    <a class="dropdown-item" href="/member">Thành viên</a>
-                    <a class="dropdown-item" href="/cashier">Thu ngân</a>
-                    <a class="dropdown-item" href="/vendor">Nhà cung cấp</a>
-                    <a class="dropdown-item" href="/manager">Quản lí</a>
-                    <a class="dropdown-item" href="/cook">Đầu bếp</a>
-                    <a class="dropdown-item" href="/screen">Touch screen</a>
-                </div>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/signup">Đăng kí</a>
-            </li>
-            <% 
-        } 
-        %>
+            <div class="dropdown-menu">
+                <a class="dropdown-item" href="/member">Thành viên</a>
+                <a class="dropdown-item" href="/cashier">Thu ngân</a>
+                <a class="dropdown-item" href="/vendor">Nhà cung cấp</a>
+                <a class="dropdown-item" href="/manager">Quản lí</a>
+                <a class="dropdown-item" href="/cook">Đầu bếp</a>
+                <a class="dropdown-item" href="/screen">Touch screen</a>
+            </div>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/signup">Đăng kí</a>
+        </li>
+
         <li class="nav-item">
             <a class="nav-link" href="/order/status">Trạng thái đơn hàng</a>
         </li>
 
-        
+
     </ul>
     <%if (userType) { %>
-        
+
         <nav class="form-inline dropdown dropleft float-sm-right float-right">
             <button type="button" class="btn btn-dark dropdown-toggle" data-toggle="dropdown">
           </button>
