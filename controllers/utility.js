@@ -263,6 +263,5 @@ module.exports.Service = class {
      */
     static async submitPreparedFood(foodId, count) {
         return await model.submitPreparedFood(foodId, count);
->>>>>>> fccec75466e35504c82f2882017d86ca45b2b6d5
     }
 }
