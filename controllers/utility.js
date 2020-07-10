@@ -234,10 +234,9 @@ module.exports.Manager = class {
 
     //TODO
     //get report methods
-<<<<<<< HEAD
-    static async getReport() {
+    static async getReport(){
         return await model.getReport();
-=======
+    }
 }
 
 module.exports.Service = class {

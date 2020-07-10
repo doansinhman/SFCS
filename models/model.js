@@ -2,13 +2,9 @@
 const sqlite3 = require('sqlite3');
 const db = new sqlite3.Database('./models/database.db');
 const bcrypt = require('bcrypt');
-<<<<<<< HEAD
 const cookieParser = require('cookie-parser');
-=======
 const { Locked } = require('http-errors');
->>>>>>> fccec75466e35504c82f2882017d86ca45b2b6d5
 const saltRounds = 10;
-
 
 module.exports.createMember = async(member) => {
     let hash = bcrypt.hashSync(member.password, saltRounds);
