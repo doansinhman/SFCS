@@ -130,7 +130,7 @@ html {
 }
 
 .foodImage {
-    width: 70vw;
+    width: 30vw;
     float: right;
 }
 
@@ -176,4 +176,17 @@ html {
 .order-pending {
     color: #ffcc00;
     font-size: 20px;
+}
+
+@media only screen and (max-width: 767px) {
+    .foodImage {
+        width: 50vw;
+    }
+    .foodImage,
+    .foodID,
+    .foodName,
+    .foodPrice,
+    .foodDescription {
+        font-size: 10px;
+    }
 }

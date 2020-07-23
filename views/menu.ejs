@@ -10,8 +10,8 @@
 
 <body>
     <!-- <% include ./include/navBarUser %> -->
-    <form class="form-inline" name="search" action="javascript:void()" onsubmit="searchFood();">
-        <div class="col-3">
+    <form class="form-inline row" name="search" action="javascript:void()" onsubmit="searchFood();">
+        <div class="col-sm-3">
             <div class="custom-control custom-radio">
                 <input type="radio" class="custom-control-input" id="foodName" name="searchOption" value="foodName" checked>
                 <label class="custom-control-label" for="foodName">Tên món</label>
@@ -25,13 +25,13 @@
                 <label class="custom-control-label" for="foodType">Loại món</label>
             </div>
         </div>
-        <div class="col-9">
+        <div class="col-sm-9">
             <input class="form-control mr-sm-2" type="text" name="searchText" placeholder="Search">
             <button class="btn btn-success" type="submit">Search</button>
         </div>
     </form>
 
-    <ul id="foodList" class="list-group">
+    <ul id="foodList" class="row">
         <li class="list-group-item">
             <img src="/images/food/9.jpg" class="mx-auto d-block foodImage">
             <p class="foodId">🔹 7</p>
@@ -100,7 +100,7 @@
         let len = arr.length;
         for (let i = 0; i < len; i++)
             if (arr[i].available) {
-                foodList.append('<li class="list-group-item">\
+                foodList.append('<li class="col-md-6 list-group-item ">\
                                     <img src="/images/food/' + arr[i].id + '.jpg" class="mx-auto d-block foodImage">\
                                     <p class="foodId">🔹 ' + arr[i].id + '</p>\
                                     <p class="foodName">👉 ' + arr[i].name + '</p>\
