@@ -2,9 +2,9 @@
 const sqlite3 = require('sqlite3');
 const db = new sqlite3.Database('./models/database.db');
 const bcrypt = require('bcrypt');
+const cookieParser = require('cookie-parser');
 const { Locked } = require('http-errors');
 const saltRounds = 10;
-
 
 module.exports.createMember = async(member) => {
     let hash = bcrypt.hashSync(member.password, saltRounds);
@@ -429,6 +429,39 @@ module.exports.confirmOrder = async(cashier_user_name, order_id, date) => {
             resolve(false);
     });
 };
+//get report from database
+module.exports.getReport = async() => {
+    return new Promise((resolve, reject) => {
+        db.all('SELECT * FROM "order"', async function(err, rows) {
+            if (err) {
+                console.log(err);
+                resolve(null);
+            } else {
+                let report = [];
+                // report contain id, name, count, date, amount.
+                let count = 0;
+                for (let i = 0; i < rows.length; i++) {
+                    if (rows[i].paid == 1) {
+                        let cart = JSON.parse(rows[i].list);
+                        for (const key in cart) {
+                            let food = await module.exports.getFoodById(key);
+                            report[count] = {
+                                id: key,
+                                name: food.name,
+                                count: cart[key],
+                                price: food.price,
+                                amount: food.price * cart[key],
+                                date: rows[i].date
+                            }
+                            count++;
+                        }
+                    } else { continue; }
+                }
+                resolve(report);
+            }
+        });
+    });
+};
 
 module.exports.getFoodsNeedToServiceOfVendor = async(court_id) => {
     return new Promise((resolve, reject) => {
@@ -535,45 +568,40 @@ if (!String.prototype.format) {
 
 module.exports.getUsersByType = async(type) =>
 {
-    return new Promise((resolve, reject) =>
-    {
-        db.all('SELECT * FROM ' + type, 
-                (err, rows) =>
-                {
-                    if (err || !rows || !rows[0]) {
-                        resolve(null);
-                    }
-                    else
-                    {
-                        resolve(rows);
-                    }
-                }
-        )
-    });
-}
-module.exports.loadMemberData = async(user_name) =>
-{
-    return new Promise((resolve, reject) => 
-        {
-            var str = 'SELECT * FROM member WHERE user_name=\'' + user_name + '\'';
-            db.all(str, (err, row) =>
-                {
-                    if (err || !row || !row[0]) {
-                        console.log(str);
-                        resolve(null);
-                    }
-                    else
-                    {
-                        resolve(row[0]);
-                    }
-                }
-            )
-        }
+    return new Promise(
+        (resolve, reject) =>
+            {
+                db.all('SELECT * FROM ' + type, 
+                        (err, rows) =>
+                        {
+                            if (err || !rows || !rows[0]) {
+                                resolve(null);
+                            }
+                            else
+                            {
+                                resolve(rows);
+                            }
+                        }
+                )
+            }
     )
+}
+module.exports.loadMemberData = async(user_name) => {
+    return new Promise((resolve, reject) => {
+        var str = 'SELECT * FROM member WHERE user_name=\'' + user_name + '\'';
+        db.all(str, (err, row) => {
+            if (err || !row || !row[0]) {
+                console.log(str);
+                resolve(null);
+            } else {
+                resolve(row[0]);
+            }
+        })
+    })
 };
-module.exports.updateMemberData = async(user_name, data) => 
-{
-    return new Promise((resolve, reject) => 
+module.exports.updateMemberData = async(user_name, data) => {
+    return new Promise(
+        (resolve, reject) => 
         {
             var str = 'SELECT * FROM member WHERE user_name=\'' + user_name + '\'';
             db.all(str, (err, row) =>
@@ -588,33 +616,26 @@ module.exports.updateMemberData = async(user_name, data) =>
                     }
                 }
             )
-        }
-    )
-    .then
-    (
-        user => 
-        {
-            console.log();
-            
-            user.full_name = data.full_name;
-            user.birthday = data.birthday;
-            user.phone_number = data.phone_number;
-            user.email = data.email;
-            
-            var x = () => 
-            {
-                return 'full_name=' + op + user.full_name + op + 
-                ',birthday=' + op + user.birthday + op +
-                ',phone_number=' + user.phone_number +
-                ',email=' + op + user.email + op;
-            }
+        })
+        .then(
+            user => {
+                console.log();
+                user.full_name = data.full_name;
+                user.birthday = data.birthday;
+                user.phone_number = data.phone_number;
+                user.email = data.email;
 
-            var str = 'UPDATE member SET ' 
-            + x()
-            + ' WHERE id = ' + user.id;          
-            db.all(str, (err) => (new Error(err)));
-            db.run
-        }
+                var x = () => {
+                    return 'full_name=' + op + user.full_name + op +
+                        ',birthday=' + op + user.birthday + op +
+                        ',phone_number=' + user.phone_number +
+                        ',email=' + op + user.email + op;
+                }
+                var str = 'UPDATE member SET ' 
+                + x()
+                + ' WHERE id = ' + user.id;          
+                db.all(str, (err) => (new Error(err)));
+            }
     )
     .catch(reason => console.log(reason));
 

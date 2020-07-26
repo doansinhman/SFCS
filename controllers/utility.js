@@ -90,8 +90,7 @@ module.exports.Vendor = class {
         return await model.loginVendor(user_name, password);
     }
     static async getReport() {
-        //TODO
-        return "REPORT";
+        return await model.getReport();
     }
     static async createVendor(vendor) {
         return await model.createVendor(vendor);
@@ -235,6 +234,9 @@ module.exports.Manager = class {
 
     //TODO
     //get report methods
+    static async getReport(){
+        return await model.getReport();
+    }
 }
 
 module.exports.Service = class {

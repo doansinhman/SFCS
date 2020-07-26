@@ -2,9 +2,9 @@
 build/Release
  
 # Dependency directories
-node_modules
+node_modules/
 jspm_packages
 
 # Food thumbnails
-public/images/food
-models/database.db
+#public/images/food
+#models/*.db

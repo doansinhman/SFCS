@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>
+            <%=title%>
+        </title>
+    </head>
+    
+    <div class="container">
+            <div class="table-responsive">
+            <h1>Thống kê sản phẩm</h1>
+            <div id="employee_table"></div>
+            </div>
+    </div>
+    <table class="table table-bordered table-striped" style="widows:100%" border="1">
+        <tr>
+            <th>Mã sản phẩm</th>
+            <th>Tên sản phẩm</th>
+            <th>Số lượng</th>
+            <th>Giá</th>
+            <th>Thành tiền</th>
+            <th>Thời gian</th>
+        </tr>
+        <%for (let i = 1; i < report.length; i++) {%>
+            <tr>
+                <%for(let key in report[i]) {%>
+                    <td><%=report[i][key]%></td>
+                <%}%>
+            </tr>
+        <%}%>
+    </table>
+    <button id="button" onclick="window.location.href='/vendor/download'">Lưu</button>
+    </body>
+</html>
+
+<script>
+    // function showreport() {
+    //     alert("asdfasdf");
+    //     var table_data = '<table class="table table-bordered table-striped">';
+    //     for (let i = 0; i < report.length; i++) {
+    //         table_data += '<tr>';
+    //         for (let key in report[i]) {
+    //             if (i == 0){
+    //                 table_data += '<th>'+ key +'</th>';
+    //             }
+    //             else{
+    //                 table_data += '<td>' + report[i].key + '</td>';
+    //             }
+    //         }
+    //         table_data += '</tr>';
+    //     }
+    //     table_data += '</table>';
+    //     document.getElementById("employee_table").innerHTML = table_data;
+    // }
+    // function show_report()
+    // {
+    //     var employee_data = csv.split(/\r?\n|\r/);
+    //     var table_data = '<table class="table table-bordered table-striped">';
+    //     for(var count = 0; count < employee_data.length; count++)
+    //     {
+    //         var cell_data = employee_data[count].split(",");
+    //         table_data += '<tr>';
+    //         for(var cell_count=0; cell_count<cell_data.length; cell_count++)
+    //         {
+    //             if(count === 0)
+    //             {
+    //                 table_data += '<th>'+cell_data[cell_count]+'</th>';
+    //             }
+    //             else
+    //             {
+    //                 table_data += '<td>'+cell_data[cell_count]+'</td>';
+    //             }
+    //         }
+    //         table_data += '</tr>';
+    //     }
+    //     table_data += '</table>';
+    //     document.getElementById("employee_table").innerHTML = table_data;
+    // }
+    // function show_report_json(){
+    //     var table_data = '<table class="table table-bordered table-striped">';
+    //     for (let i = 0; i < report.length; i++) {
+    //         table_data += '<tr>';
+    //         for (let key in report[i]) {
+    //             if (i == 0){
+    //                 table_data += '<th>'+ key +'</th>';
+    //             }
+    //             else{
+    //                 table_data += '<td>' + report[i].key + '</td>';
+    //             }
+    //         }
+    //         table_data += '</tr>';
+    //     }
+    //     table_data += '</table>';
+    //     document.getElementById("employee_table").innerHTML = table_data;
+    // }
+</script>

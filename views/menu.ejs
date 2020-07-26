@@ -31,16 +31,19 @@
         </div>
     </form>
 
-    <ul id="foodList" class="list-group">
-        <li class="list-group-item">
-            <img src="/images/food/9.jpg" class="mx-auto d-block foodImage">
-            <p class="foodId">🔹 7</p>
-            <p class="foodName">👉 Anh Huấn</p>
-            <p class="foodPrice">💸 5000đ</p>
-            <p class="foodDescription">❕ Huấn làm đó nha</p>
-            <button class="btn btn-primary" onclick="addFood(7);">✔ Thêm vào giỏ hàng</button>
-        </li>
-    </ul>
+    <!-- <div class="container"> -->
+        <ul id="foodList" class="row">
+            <li class="list-group-item">
+                <img src="/images/food/9.jpg" class="mx-auto d-block foodImage">
+                <p class="foodId">🔹 7</p>
+                <p class="foodName">👉 Anh Huấn</p>
+                <p class="foodPrice">💸 5000đ</p>
+                <p class="foodDescription">❕ Huấn làm đó nha</p>
+                <button class="btn btn-primary" onclick="addFood(7);">✔ Thêm vào giỏ hàng</button>
+            </li>
+        </ul>
+    <!-- </div> -->
+        
 
     <div id="cart" onclick="showCart();">
         🛒
@@ -100,7 +103,7 @@
         let len = arr.length;
         for (let i = 0; i < len; i++)
             if (arr[i].available) {
-                foodList.append('<li class="list-group-item">\
+                foodList.append('<li id="foodInf" class="col-lg-3 col-md-6">\
                                     <img src="/images/food/' + arr[i].id + '.jpg" class="mx-auto d-block foodImage">\
                                     <p class="foodId">🔹 ' + arr[i].id + '</p>\
                                     <p class="foodName">👉 ' + arr[i].name + '</p>\

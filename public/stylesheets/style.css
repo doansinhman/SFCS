@@ -129,9 +129,26 @@ html {
     width: 80%;
 }
 
+.row {
+    margin: 0;
+}
+
+ul {
+    list-style-type: none;
+}
+
+#foodList {
+    padding: 0;
+}
+
+#foodInf {
+    border: 1px solid silver;
+    padding: 15px;
+}
+
 .foodImage {
-    width: 70vw;
-    float: right;
+    width: 30vw;
+    /* float: right; */
 }
 
 .foodID {
@@ -157,7 +174,7 @@ html {
     position: fixed;
     bottom: 0;
     right: 0;
-    font-size: 30px;
+    font-size: 50px;
 }
 
 #cart:hover {
@@ -177,3 +194,52 @@ html {
     color: #ffcc00;
     font-size: 20px;
 }
+
+/* @media only screen and (max-width: 767px) {
+    .foodImage {
+        width: 50vw;
+    }
+    .foodImage,
+    .foodID,
+    .foodName,
+    .foodPrice,
+    .foodDescription {
+        font-size: 10px;
+    }
+} */
+
+/* Large devices */
+@media (min-width: 992px) {
+    .foodImage {
+      margin-top: 5px;
+      margin-bottom: 5px;
+      width: 230px;
+      height: 230px;
+    }
+    #foodInf {
+      text-align: center;
+    }
+  }
+  
+  /* Medium devices */
+  @media (min-width: 768px) and (max-width: 991px) {
+    .foodImage {
+        margin-bottom: 5px;
+        width: 250px;
+        height: 250px;
+        /* float: right; */
+    }
+    #foodInf {
+      text-align: center;
+    }
+  }
+  
+  /* Small devices */
+  @media (max-width: 767px) {
+    .foodImage {
+      width: 250px;
+      height: 250px;
+      float: right;
+    }
+  }
+  

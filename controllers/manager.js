@@ -3,6 +3,8 @@ var router = express.Router();
 var model = require('../models/model');
 var utility = require('./utility');
 
+var JsonToCsv = require('json2csv');
+var fs = require('fs');
 /* GET users listing. */
 function isManagerLoggingIn(req) {
     return req.session.type == 'manager';
@@ -163,6 +165,7 @@ router.get('/manage-cook', function(req, res, next) {
         res.redirect('/manager/login');
     }
 });
+
 router.get('/manage-member', async function(req, res, next) {
     
     if (isManagerLoggingIn(req)) {
