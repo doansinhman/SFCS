@@ -14,7 +14,7 @@
         <li class="nav-item">
             <a class="nav-link" href="/menu">Thực đơn</a>
         </li>
-<<<<<<< HEAD
+        <%if (!userType) { %>
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
                     Đăng nhập
@@ -31,12 +31,10 @@
             <li class="nav-item">
                 <a class="nav-link" href="/signup">Đăng kí</a>
             </li>
-=======
 
-        <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
-                    Đăng nhập
-                </a>
+            <li class="nav-item">
+                <a class="nav-link" href="/order/status">Trạng thái đơn hàng</a>
+            </li>
             <div class="dropdown-menu">
                 <a class="dropdown-item" href="/member">Thành viên</a>
                 <a class="dropdown-item" href="/cashier">Thu ngân</a>
@@ -45,15 +43,15 @@
                 <a class="dropdown-item" href="/cook">Đầu bếp</a>
                 <a class="dropdown-item" href="/screen">Touch screen</a>
             </div>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="/signup">Đăng kí</a>
-        </li>
->>>>>>> 14aecc3090eca9903014ec2bec662e5eb8a1553a
+            </li>
 
-        <li class="nav-item">
-            <a class="nav-link" href="/order/status">Trạng thái đơn hàng</a>
-        </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/signup">Đăng kí</a>
+            </li>
+            <% } %>
+                <li class="nav-item">
+                    <a class="nav-link" href="/order/status">Trạng thái đơn hàng</a>
+                </li>
 
 
     </ul>
@@ -63,6 +61,7 @@
             <button type="button" class="btn btn-dark dropdown-toggle" data-toggle="dropdown">
           </button>
             <div class="dropdown-menu">
+                <a class="dropdown-item" href="/dashboard">Dashboard</a>
                 <a class="dropdown-item" href="/info">Thông tin tài khoản</a>
                 <a class="dropdown-item" href="/logout">Đăng xuất</a>
             </div>

@@ -25,6 +25,15 @@ router.get('/menu', function(req, res, next) {
     });
 });
 
+router.get('/dashboard', function(req, res, next) {
+    if (req.session.type) {
+        res.redirect('/' + req.session.type + '/dashboard');
+    } else {
+        res.writeHead(404);
+        res.end('Login first.');
+    }
+});
+
 router.use('/member', require('./member'));
 router.use('/cashier', require('./cashier'));
 router.use('/vendor', require('./vendor'));
@@ -33,6 +42,7 @@ router.use('/cook', require('./cook'));
 router.use('/signup', require('./signup'));
 router.use('/screen', require('./screen'));
 router.use('/order', require('./order'));
+router.use('/info', require('./info'));
 
 //for some POST request
 router.use('/food', require('./food'));
