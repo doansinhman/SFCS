@@ -33,10 +33,20 @@
   background-color: darkgrey;
 }
 
+.table-container {
+  height: 350px;
+  overflow-y: auto;
+}
+
 td , th , tr {
   border: 1pt solid black;
   padding: 10px;
   text-align: center;
+}
+
+#header-row {
+  width: 100%;
+  background-color: darkgrey;
 }
 
 .btn-cp {
@@ -47,5 +57,5 @@ td , th , tr {
   text-align: center;
   text-decoration: none;
   display: inline-block;
-  shape-outside: ellipse(1);
+  
 }

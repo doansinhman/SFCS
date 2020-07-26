@@ -12,9 +12,18 @@ function getAllUserByType(type)
 {
     return model.getUsersByType(type);
 }
+function findMember(user_name)
+{
+    return model.findMember(user_name);
+}
+function deleteStaff(user_name, type)
+{
+    return model.deleteStaff(user_name, type);
+}
 // API listing
 ///////////////////////////////////////////////////////////////////
-router.post('/api/GetMember', async function(req, res, next)
+// GetMember()
+router.get('/api/GetMember', async function(req, res, next)
 {
     let scr = await getAllUserByType('member');
     if (isManagerLoggingIn(req))
@@ -25,21 +34,64 @@ router.post('/api/GetMember', async function(req, res, next)
         res.json(scr);
     }            
     else console.log('Unauthorize!');
-})
+});
+
+// DeleteMember(user_name);
 router.post('/api/DeleteMember', async function(req, res, next)
 {
-    let scr = await getAllUserByType('member');
     if (isManagerLoggingIn(req))
     {
-        scr.forEach(user => {
-            user.password = '';
-        });
-        res.json(scr);
+        var user_name = req.body.user_name;
+        var found = await findMember(user_name)
+        if(found)
+        {
+            console.log(user_name);
+            model.deleteMember(user_name).then(result => res.json(result));
+        }
+        else
+            res.json(false);
     }            
     else 
     {
-        res.json(false);
+        console.log('Unauthorize!');
+        res.write('Unauthorize!')
     }
+});
+// Force ChangePass(user_name, newpass)
+router.post('/api/ForceChangePass', async function(req, res, next)
+{
+    if (isManagerLoggingIn(req))
+    {
+        model.forceChangePass(req.body.user_name, req.body.type, req.body.new_pass)
+        .then(
+            result => res.json(result)
+        );
+    }            
+    else 
+    {
+        console.log('Unauthorize!');
+        res.write('Unauthorize!');
+    }
+})
+// Get Staff information
+router.get('/api/GetStaffs', async function(req, res, next)
+{
+    if (isManagerLoggingIn(req))
+    {
+        user = await getAllUserByType(req.query.ty);
+        res.json(user);
+    }
+    else res.write('Unauthorize!')
+})
+// Delete Staff
+router.post('/api/DeleteStaff', async function (req, res, next) 
+{
+    if (isManagerLoggingIn(req))
+    {
+        status = await deleteStaff(req.body.user_name, req.body.type);
+        res.json(status);
+    }
+    else res.write('Unauthorize!')
 })
 ///////////////////////////////////////////////////////////////////////////
 router.get('/', function(req, res, next) {

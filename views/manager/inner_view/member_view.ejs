@@ -1,41 +1,18 @@
-<div style='width: 100%; height: 120px;'></div>
+<div style='width: 100%; height: 100px;'></div>
 <div class='table-container'> 
     <table id='user-table'>
-        <thead>
-            <th>Mã số</th>
-            <th>Tên đầy đủ</th>
-            <th>Giới tính</th>
-            <th>Sinh nhật</th>
-            <th>Email</th>
-            <th>SĐT</th>
-            <th>Tên đăng nhập</th>
-            <th>Password</th>
-        </thead>
+            <thead>
+                <tr>
+                    <th>Mã số</th>
+                    <th>Tên đầy đủ</th>
+                    <th>Giới tính</th>
+                    <th>Sinh nhật</th>
+                    <th>Email</th>
+                    <th>SĐT</th>
+                    <th>Tên đăng nhập</th>
+                    <th>Hành động</th>
+                </tr>  
+            </thead>        
     </table>
-    <script>
-        function queryMember() {
-            var tp = 'member';
-            var count = 1;
-            var usertable = document.getElementById('user-table');
-            $.post('./api/GetMember',data => {
-                data.forEach(user => {
-                    var row = usertable.insertRow(count++)
-                    row.insertCell().innerHTML = user.id;
-                    row.insertCell().innerHTML = user.full_name;
-                    row.insertCell().innerHTML = user.gender == 0 ? 'Nam' : 'Nữ';
-                    row.insertCell().innerHTML = user.birthday;
-                    row.insertCell().innerHTML = user.email;
-                    row.insertCell().innerHTML = user.phone_number;
-                    row.insertCell().innerHTML = user.user_name;
-                    row.insertCell().outerHTML = 
-                        '<td>' +
-                            '<button type=\'button\' class=\'btn-cp\'> Ch. Password </button>'+
-                            '<button type=\'button\' class=\'btn-cp\'> Delete </button>'    +
-                        '</td>';
-                    console.log(user);
-                });
-            });
-        };
-        queryMember();
-    </script>
+    <script>queryMember();</script>
 </div>

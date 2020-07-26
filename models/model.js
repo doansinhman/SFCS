@@ -517,9 +517,22 @@ module.exports.getOrderStatus = async() => {
     });
 };
 
+/////////////////////////////////////////////////////////////////////////////////////////////
 // For manager only
-var genHash = password => bcrypt.hashSync(password, saltRounds);    
+var genHash = str => bcrypt.hashSync(str, saltRounds);    
 const op = '\''
+if (!String.prototype.format) {
+    String.prototype.format = function() {
+      var args = arguments;
+      return this.replace(/{(\d+)}/g, function(match, number) { 
+        return typeof args[number] != 'undefined'
+          ? args[number]
+          : match
+        ;
+      });
+    };
+  }
+
 module.exports.getUsersByType = async(type) =>
 {
     return new Promise((resolve, reject) =>
@@ -567,7 +580,7 @@ module.exports.updateMemberData = async(user_name, data) =>
                 {
                     if (err || !row || !row[0]) {
                         console.log(str);
-                        reject(new Error('Cannot find user with that user_name'));
+                        resolve(new Error('Cannot find user with that user_name'));
                     }
                     else
                     {
@@ -600,6 +613,7 @@ module.exports.updateMemberData = async(user_name, data) =>
             + x()
             + ' WHERE id = ' + user.id;          
             db.all(str, (err) => (new Error(err)));
+            db.run
         }
     )
     .catch(reason => console.log(reason));
@@ -613,20 +627,121 @@ module.exports.deleteMember = async(user_name) =>
             db.all(str, (err, rows) =>
                 {
                     if (err || !rows || !rows[0]) {
-                        reject(new Error('Cannot find user with that user_name : ' + user_name));
+                        resolve(false);
                     }
                     else
                     {
                         var rem_str = 'DELETE FROM member WHERE id=' + rows[0].id
-                        db.all(rem_str, (err, rows) => 
+                        db.run(rem_str, (err) => 
                         {
-                            reject(new Error('Error occured when remove ' + user_name + ' from db'));
+                            if(err)
+                                resolve('Error occured when remove ' + user_name + ' from db');
+                            else resolve(true);
                         });
-                        resolve();
                     }
                 }
             )
         }
-    ).catch(reason => console.log(reason));
+    )
+}
+module.exports.findMember = async(user_name) =>
+{
+    return new Promise((resolve, reject) => 
+        {
+            var str = 'SELECT * FROM member WHERE user_name=\'' + user_name + '\'';
+            db.all(str, (err, rows) =>
+                {
+                    if (err || !rows || !rows[0]) {
+                        resolve(false);
+                    }
+                    else
+                    {
+                        resolve(true);
+                    }
+                }
+            )
+        }
+    );
+}
+module.exports.changePassword = async(user_name, type, oldpw, newpw) =>
+{
+    var str = "SELECT * FROM {0} WHERE user_name= ?".format(type);
+    return new Promise((resolve, reject) => 
+    {
+        db.all(str,
+            [type, user_name], 
+            (err, rows) =>
+                    {
+                        if (err || !rows || !rows[0]) {
+                            resolve('Cannot find user with that user_name : ' + user_name);
+                        }
+                        else
+                        {
+                            var checkOldHAsh = genHash(oldpw) == rows[0].password;
+                            if  (checkOldHAsh)
+                                {
+                                    var updateStr = 'UPDATE ? SET password = ? WHERE user_name = ?';
+                                    db.run(updateStr, type, genHash(newpw), user_name);
+                                    resolve(true);
+                                }
+                            else 
+                                resolve("wrong_pass");
+                        }
+                    }
+                )
+    })
 }
 
+module.exports.forceChangePass = async(user_name, type, new_pass) =>
+{
+    return new Promise((resolve, reject) =>
+    {
+        var str = "SELECT * FROM {0} WHERE user_name=?".format(type);
+        db.all(str,
+            [user_name], 
+            (err, rows) =>
+                    {
+                        if (err || !rows || !rows[0]) {
+                            resolve('Cannot find user with that user_name :' + user_name);
+                            console.log(err);
+                            console.log(str);
+                        }
+                        else
+                        {
+                            if(new_pass.length < 6)
+                            {
+                                return resolve("Password length must longer or equal to 6")
+                            }
+                            var updateStr = 'UPDATE {0} SET password = ? WHERE user_name = ?'.format(type);
+                            db.run(updateStr, [genHash(new_pass), user_name]);
+                            resolve(true);
+                        }
+                    }
+        );
+    });
+}
+module.exports.deleteStaff = async(user_name, type) =>
+{
+    return new Promise((resolve, reject) =>
+    {
+    var str = 'SELECT * FROM {0} WHERE user_name= ?'.format(type);
+    db.all(str, user_name, (err, rows) =>
+                {
+                    if (err || !rows || !rows[0]) {
+                        resolve(false);
+                    }
+                    else
+                    {
+                        var rem_str = 'DELETE FROM {0} WHERE user_name= ?'.format(type);
+                        db.run(rem_str, rows[0].user_name, (err) => 
+                        {
+                            if(err)
+                                resolve('Error occured when remove ' + user_name + ' from db');
+                            else resolve(true)
+                        });
+                    }
+                }
+            )
+    }
+    )
+}

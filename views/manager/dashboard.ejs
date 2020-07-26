@@ -7,6 +7,8 @@
     </title>
     <% include ../include/header %>
     <link rel='stylesheet' href='/stylesheets/sidenav.css'>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script src="/javascripts/manager_script.js"></script>
     <script>
         $(document).ready(function() {
             let navLock = $('#nav-lock');
@@ -38,6 +40,18 @@
     <div class="content hero-image">
         <% if (plt == 'member') { %>
             <% include ./inner_view/member_view %> 
+        <% } %>
+        <% if (plt == 'vendor') { %>
+            <% include ./inner_view/vendor_view %> 
+        <% } %>
+        <% if (plt == 'cashier') { %>
+            <% include ./inner_view/cashier_view %> 
+        <% } %>
+        <% if (plt == 'cook') { %>
+            <% include ./inner_view/cook_view %> 
+        <% } %>
+        <% if (plt == 'screen') { %>
+            <% include ./inner_view/screen_view %> 
         <% } %>
     </div>
             
