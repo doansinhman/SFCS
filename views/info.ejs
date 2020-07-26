@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>
+        <%= title %>
+    </title>
+    <% include ./include/header %>
+</head>
+<script>
+    $(document).ready(function() {
+        $(".form-group.input-group").hide();
+        getInfo();
+    });
+</script>>
+
+<body>
+    <% include ./include/navBarUser %>
+        <div id="alert"></div>
+        <div class="card bg-light">
+            <article class="card-body mx-auto" style="max-width: 400px;">
+                <h4 class="card-title mt-3 text-center">Đăng kí thành viên</h4>
+                <p class="text-center">Thao tác đơn giản, hoàn toàn miễn phí</p>
+                <p class="divider-text">
+                    <span class="bg-light">OR</span>
+                </p>
+                <form action="javascript:void()" name="info" onsubmit="return checkInput();" method="POST">
+                    <div class="form-group input-group" id="id_ele">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"> <i class="fa fa-id-card"></i> </span>
+                        </div>
+                        <input name="id" class="form-control" placeholder="ID" type="text" required disabled>
+                    </div>
+                    <div class="form-group input-group" id="court_id_ele">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"> <i class="fa fa-store"></i> </span>
+                        </div>
+                        <input name="court_id" class="form-control" placeholder="ID nhà cung cấp" type="text" required disabled>
+                    </div>
+                    <div class="form-group input-group" id="full_name_ele">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"> <i class="fa fa-male"></i> </span>
+                        </div>
+                        <input name="full_name" class="form-control" placeholder="Họ và tên" type="text" required>
+                    </div>
+                    <div class="form-group input-group" id="court_name_ele">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"> <i class="fa fa-store"></i> </span>
+                        </div>
+                        <input name="court_name" class="form-control" placeholder="Tên cửa hàng" type="text" required>
+                    </div>
+                    <div class="form-group input-group" id="gender_ele">
+                        <div class="custom-control custom-radio custom-control-inline">
+                            <input type="radio" class="custom-control-input" id="male" name="gender" value="0" checked="">
+                            <label class="custom-control-label" for="male">Nam</label>
+                        </div>
+                        <div class="custom-control custom-radio custom-control-inline">
+                            <input type="radio" class="custom-control-input" id="female" name="gender" value="1">
+                            <label class="custom-control-label" for="female">Nữ</label>
+                        </div>
+                    </div>
+                    <div class="form-group input-group" id="birthday_ele">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"> <i class="fa fa-calendar"></i> </span>
+                        </div>
+                        <input name="birthday" class="form-control" placeholder="Ngày sinh" type="date" required>
+                    </div>
+                    <!-- form-group// -->
+                    <div class="form-group input-group" id="email_ele">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"> <i class="fa fa-envelope"></i> </span>
+                        </div>
+                        <input name="email" class="form-control" placeholder="Địa chỉ email" type="email" required>
+                    </div>
+                    <!-- form-group// -->
+                    <div class="form-group input-group" id="phone_number_ele">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"> <i class="fa fa-phone"></i> </span>
+                        </div>
+                        <input name="phone_number" class="form-control" placeholder="Điện thoại di động" type="text" required>
+                    </div>
+                    <!-- form-group// -->
+                    <!-- form-group end.// -->
+                    <div class="form-group input-group" id="user_name_ele">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"> <i class="fa fa-user"></i> </span>
+                        </div>
+                        <input name="user_name" class="form-control" placeholder="Tên người dùng" type="text" required disabled>
+                    </div>
+                    <div class="form-group input-group" id="password_ele">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"> <i class="fa fa-lock"></i> </span>
+                        </div>
+                        <input name="password" class="form-control" placeholder="Mật khẩu" type="password" required>
+                    </div>
+                    <!-- form-group// -->
+                    <div class="form-group input-group" id="repassword_ele">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"> <i class="fa fa-lock"></i> </span>
+                        </div>
+                        <input id="repassword" class="form-control" placeholder="Xác nhận mật khẩu" type="password" required>
+                    </div>
+                    <!-- form-group// -->
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary btn-block"> Cập nhật </button>
+                    </div>
+                </form>
+            </article>
+        </div>
+        <!-- card.// -->
+
+        </div>
+</body>
+<script>
+    function checkInput() {
+        let full_name = document.info.full_name.value;
+        if (full_name.match(/[%,$,&,@]/gi) != null) {
+            alert('Tên không được chứa ký tự đặc biệt');
+            return false;
+        }
+        let phone_number = document.info.phone_number.value;
+        if (!phone_number.match(/^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/g)) {
+            alert('Số điện thoại không hợp lệ');
+            return false;
+        }
+        let password = document.info.password.value;
+        if (password.length < 6) {
+            alert('Mật khẩu phải ít nhất 6 kí tự');
+            return false;
+        }
+        let repassword = document.getElementById('repassword').value;
+        if (password != repassword) {
+            alert('Xác nhận mật khẩu không khớp');
+            return false;
+        }
+
+        $.post("/info", {
+                full_name: full_name,
+                gender: document.info.gender.value,
+                birthday: document.info.birthday.value,
+                email: document.info.email.value,
+                phone_number: phone_number,
+                user_name: document.info.user_name.value,
+                password: document.info.password.value
+            },
+            function(data, status) {
+                //alert("Data: " + data + "\nStatus: " + status);
+                $("#alert").empty();
+                if (status != 'success') {
+                    $("#alert").append('<div class="alert alert-danger alert-dismissible">\
+                            <button type="button" class="close" data-dismiss="alert">&times;</button>\
+                            <strong>Đăng kí thất bại</strong>\
+                            </div>');
+                } else if (data == false) {
+                    $("#alert").append('<div class="alert alert-danger alert-dismissible">\
+                            <button type="button" class="close" data-dismiss="alert">&times;</button>\
+                            <strong>Tên người dùng không khả dụng</strong>\
+                            </div>');
+                } else if (data == true) {
+                    $("#alert").append('<div class="alert alert-success alert-dismissible">\
+                            <button type="button" class="close" data-dismiss="alert">&times;</button>\
+                            <strong>Bạn đã đăng kí thành công</strong>\
+                            </div>');
+                }
+            });
+        return true;
+    }
+
+    function getInfo() {
+        $.post("/info/get", {},
+            function(user, status) {
+                console.log(user);
+                for (key in user) {
+                    document.info[key].value = user[key];
+                    $('#' + key + '_ele').show();
+                }
+            });
+    }
+</script>
+
+</html>

@@ -10,6 +10,11 @@ router.get('/', function(req, res, next) {
         userType: req.session.type
     });
 });
+router.get('/about', function(req, res, next) {
+    res.render('about', {
+        userType: req.session.type
+    });
+});
 router.get('/logout', function(req, res, next) {
     req.session.destroy(function(err) {
         if (err)
