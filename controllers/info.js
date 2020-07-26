@@ -19,7 +19,6 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/get', async function(req, res, next) {
-
     switch (req.session.type) {
         case "cashier":
             let cashier = new utility.Cashier(req.session.user);
@@ -27,8 +26,14 @@ router.post('/get', async function(req, res, next) {
             res.json(cashier);
             break;
         case "cook":
+            let cook = new utility.Cook(req.session.user);
+            delete cook.password;
+            res.json(cook);
             break;
         case "manager":
+            let manager = new utility.Manager(req.session.user);
+            delete manager.password;
+            res.json(manager);
             break;
         case "member":
             let member = new utility.Member(req.session.user);
@@ -36,8 +41,14 @@ router.post('/get', async function(req, res, next) {
             res.json(member);
             break;
         case "screen":
+            let screen = new utility.Screen(req.session.user);
+            delete screen.password;
+            res.json(screen);
             break;
         case "vendor":
+            let vendor = new utility.Vendor(req.session.user);
+            delete vendor.password;
+            res.json(vendor);
             break;
         default:
             //
@@ -45,4 +56,26 @@ router.post('/get', async function(req, res, next) {
             break;
     }
 });
+
+router.post('/update', async function(req, res, next) {
+    let info = req.body;
+    let user_name = req.session.user.user_name;
+    let type = req.session.type;
+
+    let success = await utility.User.updateInformation(type, user_name, info);
+    if (success) {
+        for (key in info) {
+            req.session.user[key] = info[key];
+        }
+        res.json(true);
+    } else {
+        res.json(false);
+    }
+});
+router.post('/updatePw', async function(req, res, next) {
+    console.log(req.body);
+    let success = await utility.User.changePassword(req.session.user.user_name, req.session.type, req.body.oldpw, req.body.newpw);
+    res.json(success);
+});
+
 module.exports = router;

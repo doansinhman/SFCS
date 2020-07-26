@@ -1,5 +1,13 @@
 var model = require('../models/model');
 
+module.exports.User = class {
+    static async updateInformation(type, user_name, info) {
+        return await model.updateInformation(type, user_name, info);
+    }
+    static async changePassword(user_name, type, oldpw, newpw) {
+        return await model.changePw(user_name, type, oldpw, newpw);
+    }
+}
 module.exports.Food = class {
     constructor(obj) {
         this.id = obj.id;
@@ -234,7 +242,7 @@ module.exports.Manager = class {
 
     //TODO
     //get report methods
-    static async getReport(){
+    static async getReport() {
         return await model.getReport();
     }
 }

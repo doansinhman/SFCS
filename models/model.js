@@ -4,6 +4,7 @@ const db = new sqlite3.Database('./models/database.db');
 const bcrypt = require('bcrypt');
 const cookieParser = require('cookie-parser');
 const { Locked } = require('http-errors');
+const { param } = require('../controllers/cook');
 const saltRounds = 10;
 
 module.exports.createMember = async(member) => {
@@ -552,38 +553,32 @@ module.exports.getOrderStatus = async() => {
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 // For manager only
-var genHash = str => bcrypt.hashSync(str, saltRounds);    
+var genHash = str => bcrypt.hashSync(str, saltRounds);
 const op = '\''
 if (!String.prototype.format) {
     String.prototype.format = function() {
-      var args = arguments;
-      return this.replace(/{(\d+)}/g, function(match, number) { 
-        return typeof args[number] != 'undefined'
-          ? args[number]
-          : match
-        ;
-      });
+        var args = arguments;
+        return this.replace(/{(\d+)}/g, function(match, number) {
+            return typeof args[number] != 'undefined' ?
+                args[number] :
+                match;
+        });
     };
-  }
+}
 
-module.exports.getUsersByType = async(type) =>
-{
+module.exports.getUsersByType = async(type) => {
     return new Promise(
-        (resolve, reject) =>
-            {
-                db.all('SELECT * FROM ' + type, 
-                        (err, rows) =>
-                        {
-                            if (err || !rows || !rows[0]) {
-                                resolve(null);
-                            }
-                            else
-                            {
-                                resolve(rows);
-                            }
-                        }
-                )
-            }
+        (resolve, reject) => {
+            db.all('SELECT * FROM ' + type,
+                (err, rows) => {
+                    if (err || !rows || !rows[0]) {
+                        resolve(null);
+                    } else {
+                        resolve(rows);
+                    }
+                }
+            )
+        }
     )
 }
 module.exports.loadMemberData = async(user_name) => {
@@ -601,22 +596,17 @@ module.exports.loadMemberData = async(user_name) => {
 };
 module.exports.updateMemberData = async(user_name, data) => {
     return new Promise(
-        (resolve, reject) => 
-        {
-            var str = 'SELECT * FROM member WHERE user_name=\'' + user_name + '\'';
-            db.all(str, (err, row) =>
-                {
+            (resolve, reject) => {
+                var str = 'SELECT * FROM member WHERE user_name=\'' + user_name + '\'';
+                db.all(str, (err, row) => {
                     if (err || !row || !row[0]) {
                         console.log(str);
                         resolve(new Error('Cannot find user with that user_name'));
-                    }
-                    else
-                    {
+                    } else {
                         resolve(row[0]);
                     }
-                }
-            )
-        })
+                })
+            })
         .then(
             user => {
                 console.log();
@@ -631,138 +621,158 @@ module.exports.updateMemberData = async(user_name, data) => {
                         ',phone_number=' + user.phone_number +
                         ',email=' + op + user.email + op;
                 }
-                var str = 'UPDATE member SET ' 
-                + x()
-                + ' WHERE id = ' + user.id;          
+                var str = 'UPDATE member SET ' +
+                    x() +
+                    ' WHERE id = ' + user.id;
                 db.all(str, (err) => (new Error(err)));
             }
-    )
-    .catch(reason => console.log(reason));
+        )
+        .catch(reason => console.log(reason));
 
 }
-module.exports.deleteMember = async(user_name) => 
-{
-    return new Promise((resolve, reject) => 
-        {
-            var str = 'SELECT * FROM member WHERE user_name=\'' + user_name + '\'';
-            db.all(str, (err, rows) =>
-                {
-                    if (err || !rows || !rows[0]) {
-                        resolve(false);
-                    }
-                    else
-                    {
-                        var rem_str = 'DELETE FROM member WHERE id=' + rows[0].id
-                        db.run(rem_str, (err) => 
-                        {
-                            if(err)
-                                resolve('Error occured when remove ' + user_name + ' from db');
-                            else resolve(true);
-                        });
-                    }
-                }
-            )
-        }
-    )
+module.exports.deleteMember = async(user_name) => {
+    return new Promise((resolve, reject) => {
+        var str = 'SELECT * FROM member WHERE user_name=\'' + user_name + '\'';
+        db.all(str, (err, rows) => {
+            if (err || !rows || !rows[0]) {
+                resolve(false);
+            } else {
+                var rem_str = 'DELETE FROM member WHERE id=' + rows[0].id
+                db.run(rem_str, (err) => {
+                    if (err)
+                        resolve('Error occured when remove ' + user_name + ' from db');
+                    else resolve(true);
+                });
+            }
+        })
+    })
 }
-module.exports.findMember = async(user_name) =>
-{
-    return new Promise((resolve, reject) => 
-        {
-            var str = 'SELECT * FROM member WHERE user_name=\'' + user_name + '\'';
-            db.all(str, (err, rows) =>
-                {
-                    if (err || !rows || !rows[0]) {
-                        resolve(false);
-                    }
-                    else
-                    {
+module.exports.findMember = async(user_name) => {
+    return new Promise((resolve, reject) => {
+        var str = 'SELECT * FROM member WHERE user_name=\'' + user_name + '\'';
+        db.all(str, (err, rows) => {
+            if (err || !rows || !rows[0]) {
+                resolve(false);
+            } else {
+                resolve(true);
+            }
+        })
+    });
+}
+module.exports.changePassword = async(user_name, type, oldpw, newpw) => {
+    var str = "SELECT * FROM " + type + " WHERE user_name= ?";
+    return new Promise((resolve, reject) => {
+        db.all(str, [user_name],
+            (err, rows) => {
+                if (err || !rows || !rows[0]) {
+                    resolve('Cannot find user with that user_name : ' + user_name);
+                } else {
+                    var checkOldHAsh = genHash(oldpw) == rows[0].password;
+                    if (checkOldHAsh) {
+                        var updateStr = 'UPDATE ? SET password = ? WHERE user_name = ?';
+                        db.run(updateStr, type, genHash(newpw), user_name);
                         resolve(true);
-                    }
+                    } else
+                        resolve("wrong_pass");
                 }
-            )
-        }
-    );
-}
-module.exports.changePassword = async(user_name, type, oldpw, newpw) =>
-{
-    var str = "SELECT * FROM {0} WHERE user_name= ?".format(type);
-    return new Promise((resolve, reject) => 
-    {
-        db.all(str,
-            [type, user_name], 
-            (err, rows) =>
-                    {
-                        if (err || !rows || !rows[0]) {
-                            resolve('Cannot find user with that user_name : ' + user_name);
-                        }
-                        else
-                        {
-                            var checkOldHAsh = genHash(oldpw) == rows[0].password;
-                            if  (checkOldHAsh)
-                                {
-                                    var updateStr = 'UPDATE ? SET password = ? WHERE user_name = ?';
-                                    db.run(updateStr, type, genHash(newpw), user_name);
-                                    resolve(true);
-                                }
-                            else 
-                                resolve("wrong_pass");
-                        }
-                    }
-                )
+            }
+        )
     })
 }
 
-module.exports.forceChangePass = async(user_name, type, new_pass) =>
-{
-    return new Promise((resolve, reject) =>
-    {
-        var str = "SELECT * FROM {0} WHERE user_name=?".format(type);
-        db.all(str,
-            [user_name], 
-            (err, rows) =>
-                    {
-                        if (err || !rows || !rows[0]) {
-                            resolve('Cannot find user with that user_name :' + user_name);
-                            console.log(err);
-                            console.log(str);
-                        }
-                        else
-                        {
-                            if(new_pass.length < 6)
-                            {
-                                return resolve("Password length must longer or equal to 6")
-                            }
-                            var updateStr = 'UPDATE {0} SET password = ? WHERE user_name = ?'.format(type);
-                            db.run(updateStr, [genHash(new_pass), user_name]);
-                            resolve(true);
-                        }
+module.exports.forceChangePass = async(user_name, type, new_pass) => {
+    return new Promise((resolve, reject) => {
+        var str = "SELECT * FROM " + type + " WHERE user_name=?"
+        db.all(str, [user_name],
+            (err, rows) => {
+                if (err || !rows || !rows[0]) {
+                    resolve('Cannot find user with that user_name :' + user_name);
+                    console.log(err);
+                    console.log(str);
+                } else {
+                    if (new_pass.length < 6) {
+                        return resolve("Password length must longer or equal to 6")
                     }
+                    var updateStr = 'UPDATE {0} SET password = ? WHERE user_name = ?'.format(type);
+                    db.run(updateStr, [genHash(new_pass), user_name]);
+                    resolve(true);
+                }
+            }
         );
     });
 }
-module.exports.deleteStaff = async(user_name, type) =>
-{
-    return new Promise((resolve, reject) =>
-    {
-    var str = 'SELECT * FROM {0} WHERE user_name= ?'.format(type);
-    db.all(str, user_name, (err, rows) =>
-                {
+module.exports.deleteStaff = async(user_name, type) => {
+    return new Promise((resolve, reject) => {
+        var str = 'SELECT * FROM {0} WHERE user_name= ?'.format(type);
+        db.all(str, user_name, (err, rows) => {
+            if (err || !rows || !rows[0]) {
+                resolve(false);
+            } else {
+                var rem_str = 'DELETE FROM {0} WHERE user_name= ?'.format(type);
+                db.run(rem_str, rows[0].user_name, (err) => {
+                    if (err)
+                        resolve('Error occured when remove ' + user_name + ' from db');
+                    else resolve(true)
+                });
+            }
+        })
+    })
+}
+
+module.exports.updateInformation = async(type, user_name, info) => {
+    return new Promise((resolve, reject) => {
+        let query = 'UPDATE "' + type + '" SET ';
+        let params = [];
+        for (key in info) {
+            if (key == "id" || key == "court_id" || key == "password") {
+                delete info[key];
+                continue;
+            }
+
+            query += key + '=?,';
+            params.push(info[key]);
+        }
+        query = query.substr(0, query.length - 1);
+
+        //console.log(query);
+        //console.log(params);
+        db.run(query, params, function(err) {
+            if (err) {
+                console.log(err);
+                resolve(false);
+            } else resolve(true);
+        })
+    })
+}
+
+module.exports.getUserByUsername = async(user_name, type) => {
+    return new Promise(
+        (resolve, reject) => {
+            db.all('SELECT * FROM ' + type + ' WHERE user_name="' + user_name + '"',
+                (err, rows) => {
                     if (err || !rows || !rows[0]) {
-                        resolve(false);
-                    }
-                    else
-                    {
-                        var rem_str = 'DELETE FROM {0} WHERE user_name= ?'.format(type);
-                        db.run(rem_str, rows[0].user_name, (err) => 
-                        {
-                            if(err)
-                                resolve('Error occured when remove ' + user_name + ' from db');
-                            else resolve(true)
-                        });
+                        resolve(null);
+                    } else {
+                        resolve(rows[0]);
                     }
                 }
             )
-    }
+        }
     )
+}
+module.exports.changePw = async(user_name, type, oldpw, newpw) => {
+    return new Promise(async(resolve, reject) => {
+        let user = await module.exports.getUserByUsername(user_name, type);
+        if (!user || !bcrypt.compareSync(oldpw, user.password)) {
+            resolve(false);
+        } else {
+            db.run('UPDATE ' + type + ' SET password=? WHERE user_name=?', [genHash(newpw), user_name], function(err) {
+                if (err) {
+                    resolve(false);
+                } else {
+                    resolve(true);
+                }
+            })
+        }
+    });
 }
