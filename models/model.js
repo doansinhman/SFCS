@@ -776,3 +776,21 @@ module.exports.changePw = async(user_name, type, oldpw, newpw) => {
         }
     });
 }
+
+module.exports.getVendorsName = async() => {
+
+    return new Promise((resolve, reject) => {
+        db.all('SELECT id, court_name FROM vendor', function(err, rows) {
+            if (err) {
+                console.log(err);
+                resolve({});
+            } else {
+                let obj = {};
+                rows.forEach(vendor => {
+                    obj["" + vendor.id] = vendor.court_name;
+                });
+                resolve(obj);
+            }
+        });
+    });
+}

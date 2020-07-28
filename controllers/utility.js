@@ -103,6 +103,9 @@ module.exports.Vendor = class {
     static async createVendor(vendor) {
         return await model.createVendor(vendor);
     }
+    static async getVendorsName() {
+        return await model.getVendorsName();
+    }
 }
 
 module.exports.Cook = class {

@@ -37,7 +37,7 @@
     }
 
     function payWithMomo() {
-
+        alert('Tính năng này đang được phát triển.');
     }
 
     function payWithSpotCash() {
@@ -75,6 +75,11 @@
                             <button type="button" class="close" data-dismiss="alert">&times;</button>\
                             <strong>[' + ret.id + ']Bạn hãy gặp thu ngân để thanh toán.</strong>\
                             </div>');
+                        let newTab = window.open('/order/slip/' + ret.id);
+                        newTab.onload = () => {
+                            newTab.print();
+                            newTab.close();
+                        }
                     }
                 });
         }

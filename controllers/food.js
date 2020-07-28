@@ -36,6 +36,9 @@ router.post('/', async function(req, res, next) {
         case 'foodType':
             res.json(await utility.Food.getFoodsByFoodType(data.value));
             break;
+        case 'vendor':
+            res.json(await utility.Vendor.getVendorsName());
+            break;
         default:
             break;
     }

@@ -32,18 +32,18 @@
     </form>
 
     <!-- <div class="container"> -->
-        <ul id="foodList" class="row">
-            <li class="list-group-item">
-                <img src="/images/food/9.jpg" class="mx-auto d-block foodImage">
-                <p class="foodId">🔹 7</p>
-                <p class="foodName">👉 Anh Huấn</p>
-                <p class="foodPrice">💸 5000đ</p>
-                <p class="foodDescription">❕ Huấn làm đó nha</p>
-                <button class="btn btn-primary" onclick="addFood(7);">✔ Thêm vào giỏ hàng</button>
-            </li>
-        </ul>
+    <ul id="foodList" class="row">
+        <li class="list-group-item">
+            <img src="/images/food/9.jpg" class="mx-auto d-block foodImage">
+            <p class="foodId">🔹 7</p>
+            <p class="foodName">👉 Anh Huấn</p>
+            <p class="foodPrice">💸 5000đ</p>
+            <p class="foodDescription">❕ Huấn làm đó nha</p>
+            <button class="btn btn-primary" onclick="addFood(7);">✔ Thêm vào giỏ hàng</button>
+        </li>
+    </ul>
     <!-- </div> -->
-        
+
 
     <div id="cart" onclick="showCart();">
         🛒
@@ -95,6 +95,7 @@
 </body>
 <script>
     var FOOD_LIST = [];
+    var VENDOR = {};
 
     function renderFood(arr) {
         FOOD_LIST = arr;
@@ -106,6 +107,7 @@
                 foodList.append('<li id="foodInf" class="col-lg-3 col-md-6">\
                                     <img src="/images/food/' + arr[i].id + '.jpg" class="mx-auto d-block foodImage">\
                                     <p class="foodId">🔹 ' + arr[i].id + '</p>\
+                                    <p>Nhà cung cấp: ' + VENDOR[arr[i].court_id] + '</p>\
                                     <p class="foodName">👉 ' + arr[i].name + '</p>\
                                     <p class="foodPrice">💸 ' + arr[i].price + '</p>\
                                     <p class="foodDescription">❕ ' + arr[i].description + '</p>\
@@ -163,7 +165,7 @@
                     count: 1
                 }
             } else {
-                cart["" + food.id].count += 1;
+                cart["" + food.id].count -= -1;
             }
             localStorage.setItem("cart", JSON.stringify(cart));
         } catch (e) {
@@ -178,6 +180,7 @@
     }
 
     function showCart() {
+        //updateCart();
         let cartString = localStorage.getItem("cart");
         let cart = {};
         try {
@@ -198,7 +201,7 @@
                             <td>' + key + '</td>\
                             <td>' + cart[key].name + '</td>\
                             <td>' + cart[key].price + '</td>\
-                            <td>' + cart[key].count + '</td>\
+                            <td><input id="food' + key + '"type="number" onfocusout="updateCart();" min=0 value=' + cart[key].count + '></input></td>\
                             <td>' + cart[key].price * cart[key].count + '</td>\
                         </tr>');
                 }
@@ -218,8 +221,32 @@
             cart = {};
         }
 
-
         openModal();
+    }
+
+    function updateCart() {
+        let cartString = localStorage.getItem("cart");
+        let cart = {};
+        try {
+            cart = JSON.parse(cartString);
+
+            if (!cart) {
+                cart = {};
+            }
+            for (let key in cart) {
+                cart[key].count = document.getElementById('food' + key).value;
+                if (cart[key].count == 0) {
+                    delete cart[key];
+                }
+            }
+
+            localStorage.setItem("cart", JSON.stringify(cart));
+        } catch (e) {
+            //alert('catch 1 err');
+            cart = {};
+        }
+
+        showCart();
     }
 
     function openModal() {
@@ -240,7 +267,19 @@
             modal.style.display = "none";
         }
     }
-    getAllFood();
+
+
+    $.post("/food", {
+            target: "vendor"
+        },
+        function(vendor, status) {
+            //console.log(arr);
+            if (status == 'success' && vendor) {
+                VENDOR = vendor;
+
+                getAllFood();
+            }
+        });
 </script>
 
 </html>

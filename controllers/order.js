@@ -28,6 +28,10 @@ router.get('/', function(req, res, next) {
         res.render('./order/screen', {
             title: 'Thanh toán'
         })
+    } else if (isMemberLoggingIn(req)) {
+        res.render('./order/member', {
+            title: 'Thanh toán'
+        })
     }
 });
 router.get('/status', function(req, res, next) {
@@ -49,7 +53,7 @@ router.post('/confirm', async function(req, res, next) {
     }
 });
 router.post('/spot-cash', async function(req, res, next) {
-    if (isScreenLoggingIn) {
+    if (isScreenLoggingIn(req)) {
         console.log(req.body.cart);
         let cart = {};
         try {
@@ -76,11 +80,23 @@ router.post('/spot-cash', async function(req, res, next) {
             res.json({ success: false });
         }
     } else {
-        res.end();
+        res.json({ success: false });
     }
 });
 
 router.post('/status', async function(req, res, next) {
     res.json(await utility.Order.getOrderStatus());
 });
+
+//check
+router.get('/slip/:order_id', async function(req, res, next) {
+    //console.log(req.params);
+    if (isScreenLoggingIn(req) || isCashierLoggingIn(req)) {
+        let order = await utility.Order.getOrder(req.params.order_id);
+        res.render('./order/slip', { id: req.params.order_id, date: order.date, cart: order.cart });
+    } else {
+        res.end('404');
+    }
+});
+
 module.exports = router;
