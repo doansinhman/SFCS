@@ -22,6 +22,29 @@ function deleteStaff(user_name, type)
 {
     return model.deleteStaff(user_name, type);
 }
+function addStaff(type, data)
+{
+    var creator;
+    var d = JSON.parse(data);
+    switch (type)
+    {
+        case "cook":
+            creator = model.createCook;
+            break;
+        case "vendor":
+            creator = model.createVendor;
+            break;
+        case "cashier":
+            creator = model.createCashier;
+            break;
+        case "screen":
+            creator = model.createScreen;
+            break;
+        default: return "Not a valid Staff type"
+
+    }
+    return creator(d);
+}
 // API listing
 ///////////////////////////////////////////////////////////////////
 // GetMember()
@@ -91,6 +114,16 @@ router.post('/api/DeleteStaff', async function (req, res, next)
     if (isManagerLoggingIn(req))
     {
         status = await deleteStaff(req.body.user_name, req.body.type);
+        res.json(status);
+    }
+    else res.write('Unauthorize!')
+})
+// Add Staff
+router.post('/api/AddStaff', async function(req, res, next)
+{
+    if (isManagerLoggingIn(req))
+    {
+        status = await addStaff(req.body.type, req.body.data);
         res.json(status);
     }
     else res.write('Unauthorize!')

@@ -16,4 +16,13 @@
             </thead>        
     </table>
     <script>queryStaff('vendor');</script>
+    <script>
+        var usertable = document.getElementById('user-table');
+        var row = usertable.insertRow();
+        row.insertCell().outerHTML = 
+                        '<td>' +
+                            '<button type=\'button\' id=\'add-usr\' class=\'btn-cp\'> Add </button>'
+                        '</td>';
+        $("#add-usr").click("vendor", addStaff)
+    </script>
 </div>
