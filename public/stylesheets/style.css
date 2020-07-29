@@ -195,6 +195,20 @@ ul {
     font-size: 20px;
 }
 
+/* Status page */
+.order-ready {
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+.status > h6 {
+    margin-bottom: 30px;
+}
+
+div#orderList {
+    border: 1px solid silver;
+}
+
 /* @media only screen and (max-width: 767px) {
     .foodImage {
         width: 50vw;
