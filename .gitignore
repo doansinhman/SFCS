@@ -8,4 +8,4 @@ jspm_packages
 .vscode/
 # Food thumbnails
 #public/images/food
-#models/*.db
+models/*.db
