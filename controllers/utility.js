@@ -97,8 +97,8 @@ module.exports.Vendor = class {
     static async login(user_name, password) {
         return await model.loginVendor(user_name, password);
     }
-    static async getReport() {
-        return await model.getReport();
+    static async getReport(court_id) {
+        return await model.getReport(court_id);
     }
     static async createVendor(vendor) {
         return await model.createVendor(vendor);

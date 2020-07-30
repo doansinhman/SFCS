@@ -60,28 +60,27 @@ router.get('/menu/', function(req, res, next) {
     }
 });
 
-router.get('/report', async function(req, res){
-    if (isVendorLoggingIn(req)){
-        let report = await utility.Vendor.getReport();
+router.get('/report', async function(req, res) {
+    if (isVendorLoggingIn(req)) {
+        let report = await utility.Vendor.getReport(req.session.user.id);
 
-        const csv = await JsonToCsv.parse(report, {fields : ['id', 'name', 'count', 'date', 'amount']});
+        const csv = await JsonToCsv.parse(report, { fields: ['id', 'name', 'count', 'date', 'amount'] });
 
-        fs.writeFile('report.csv', csv, function(err){
+        fs.writeFile('report.csv', csv, function(err) {
             if (err) console.log(err);
         });
-        console.log(report);
+        //console.log(report);
         try {
-            res.render('./report' , {title: "Thống kê", report : report});
+            res.render('./report', { title: "Thống kê", report: report });
         } catch (error) {
             console.log(error);
         }
-    }
-    else {
+    } else {
         res.redirect('/vendor/login');
     }
 });
 
-router.get('/download', async function (req, res) {
+router.get('/download', async function(req, res) {
     res.download('./report.csv', 'report.csv');
 })
 

@@ -8,7 +8,7 @@
     <% include ../include/header %>
 </head>
 
-<body class="text-center">
+<body class="text-center status">
     <h1>Trạng thái đơn hàng</h1>
     <h6>Làm mới sau: <span id='time'>30</span>s</h6>
     <div class="row" id="orderList">
@@ -22,9 +22,9 @@
                 let orderList = $('#orderList');
                 orderArr.forEach((order) => {
                     if (order.ready) {
-                        orderList.append('<div class="col-sm-3 order-ready">ID: ' + order.id + ' - Sẵn sàng</div>');
+                        orderList.append('<div class="col-sm-6 col-md-3 order-ready"><div class="bg-white rounded shadow-sm py-3">ID: ' + order.id + ' - Sẵn sàng</div></div>');
                     } else {
-                        orderList.append('<div class="col-sm-3 order-pending">ID: ' + order.id + ' - Đang chờ</div>');
+                        orderList.append('<div class="col-sm-6 col-md-3 order-pending"><div class="bg-white rounded shadow-sm py-3">ID: ' + order.id + ' - Đang chờ</div></div>');
                     }
                 });
             });

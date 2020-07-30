@@ -109,7 +109,7 @@
                                     <p class="foodId">🔹 ' + arr[i].id + '</p>\
                                     <p>Nhà cung cấp: ' + VENDOR[arr[i].court_id] + '</p>\
                                     <p class="foodName">👉 ' + arr[i].name + '</p>\
-                                    <p class="foodPrice">💸 ' + arr[i].price + '</p>\
+                                    <p class="foodPrice">💸 ' + formatCurrency(arr[i].price, '') + '</p>\
                                     <p class="foodDescription">❕ ' + arr[i].description + '</p>\
                                     <button class="btn btn-primary" onclick="addFood(' + i + ');">✔ Thêm vào giỏ hàng</button>\
                                 </li>');
@@ -200,9 +200,9 @@
                     foodChosen.append('<tr>\
                             <td>' + key + '</td>\
                             <td>' + cart[key].name + '</td>\
-                            <td>' + cart[key].price + '</td>\
+                            <td>' + formatCurrency(cart[key].price, '') + '</td>\
                             <td><input id="food' + key + '"type="number" onfocusout="updateCart();" min=0 value=' + cart[key].count + '></input></td>\
-                            <td>' + cart[key].price * cart[key].count + '</td>\
+                            <td>' + formatCurrency(cart[key].price * cart[key].count, '') + '</td>\
                         </tr>');
                 }
             if (empty) {
@@ -213,7 +213,7 @@
                                 <td></td>\
                                 <td></td>\
                                 <td><strong>Tổng cộng</strong></td>\
-                                <td><strong>' + amount + '</strong></td>\
+                                <td><strong>' + formatCurrency(amount, '') + '</strong></td>\
                             </tr>');
             }
         } catch (e) {
@@ -247,6 +247,12 @@
         }
 
         showCart();
+    }
+
+    function formatCurrency(n, currency) {
+        return currency + n.toString().replace(/./g, function(c, i, a) {
+            return i > 0 && c !== "." && (a.length - i) % 3 === 0 ? "," + c : c;
+        });
     }
 
     function openModal() {
