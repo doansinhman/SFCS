@@ -8,21 +8,6 @@
         <link rel='stylesheet' href='/stylesheets/sidenav.css'>
         <script src="/javascripts/sweetalert.min.js"></script>
         <script src="/javascripts/manager_script.js"></script>
-        <script>
-            $(document).ready(function() {
-                let navLock = $('#nav-lock');
-                let navReal = $('#nav-real');
-                let imgLock = $('#img-lock');
-                let imgReal = $('#img-real');
-                navReal.hide();
-                imgReal.click(function() {
-                    $(document.getElementsByClassName('sidenav')).css('padding-top', '30pt');
-                });
-                imgLock.click(function() {
-                    $(document.getElementsByClassName('sidenav')).css('padding-top', '50pt');
-                });
-            });
-        </script>
     </head>
     
     <body>

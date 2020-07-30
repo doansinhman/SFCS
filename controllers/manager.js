@@ -209,9 +209,21 @@ router.get('/manage-member', async function(req, res, next) {
     }
 });
 
-router.get('/report', function(req, res, next) {
+router.get('/report', async function(req, res, next) {
     if (isManagerLoggingIn(req)) {
-        res.render('./manager/dashboard', { title: "Lấy báo cáo", plt: 'getReport', userType: req.session.type })
+        let report = await utility.Vendor.getReport(-1);
+
+        const csv = await JsonToCsv.parse(report, { fields: ['id', 'name', 'count', 'date', 'amount'] });
+
+        fs.writeFile('report.csv', csv, function(err) {
+            if (err) console.log(err);
+        });
+        //console.log(report);
+        try {
+            res.render('./report', { title: "Thống kê", report: report });
+        } catch (error) {
+            console.log(error);
+        }
     } else {
         res.redirect('/manager/login');
     }
