@@ -431,7 +431,7 @@ module.exports.confirmOrder = async(cashier_user_name, order_id, date) => {
     });
 };
 //get report from database
-module.exports.getReport = async() => {
+module.exports.getReport = async(court_id) => {
     return new Promise((resolve, reject) => {
         db.all('SELECT * FROM "order"', async function(err, rows) {
             if (err) {
@@ -446,6 +446,7 @@ module.exports.getReport = async() => {
                         let cart = JSON.parse(rows[i].list);
                         for (const key in cart) {
                             let food = await module.exports.getFoodById(key);
+                            if (food.court_id != court_id) continue;
                             report[count] = {
                                 id: key,
                                 name: food.name,
@@ -732,7 +733,7 @@ module.exports.updateInformation = async(type, user_name, info) => {
             query += key + '=?,';
             params.push(info[key]);
         }
-        query = query.substr(0, query.length - 1);
+        query = query.substr(0, query.length - 1) + ' WHERE user_name="' + user_name + '"';
 
         //console.log(query);
         //console.log(params);
@@ -766,7 +767,7 @@ module.exports.changePw = async(user_name, type, oldpw, newpw) => {
         if (!user || !bcrypt.compareSync(oldpw, user.password)) {
             resolve(false);
         } else {
-            db.run('UPDATE ' + type + ' SET password=? WHERE user_name=?', [genHash(newpw), user_name], function(err) {
+            db.run('UPDATE ' + type + ' SET password=? WHERE user_name="' + user_name + '"', [genHash(newpw)], function(err) {
                 if (err) {
                     resolve(false);
                 } else {

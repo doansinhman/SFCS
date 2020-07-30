@@ -1,36 +1,40 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>
-            <%=title%>
-        </title>
-    </head>
-    
-    <div class="container">
-            <div class="table-responsive">
-            <h1>Thống kê sản phẩm</h1>
-            <div id="employee_table"></div>
-            </div>
+
+<head>
+    <title>
+        <%=title%>
+    </title>
+</head>
+
+<div class="container">
+    <div class="table-responsive">
+        <h1>Thống kê sản phẩm</h1>
+        <div id="employee_table"></div>
     </div>
-    <table class="table table-bordered table-striped" style="widows:100%" border="1">
+</div>
+<table class="table table-bordered table-striped" style="widows:100%" border="1">
+    <tr>
+        <th>Mã sản phẩm</th>
+        <th>Tên sản phẩm</th>
+        <th>Số lượng</th>
+        <th>Giá</th>
+        <th>Thành tiền</th>
+        <th>Thời gian</th>
+    </tr>
+    <%for (let i = 0; i < report.length; i++) {%>
         <tr>
-            <th>Mã sản phẩm</th>
-            <th>Tên sản phẩm</th>
-            <th>Số lượng</th>
-            <th>Giá</th>
-            <th>Thành tiền</th>
-            <th>Thời gian</th>
-        </tr>
-        <%for (let i = 1; i < report.length; i++) {%>
-            <tr>
-                <%for(let key in report[i]) {%>
-                    <td><%=report[i][key]%></td>
+            <%for(let key in report[i]) {%>
+                <td>
+                    <%=report[i][key]%>
+                </td>
                 <%}%>
-            </tr>
+        </tr>
         <%}%>
-    </table>
-    <button id="button" onclick="window.location.href='/vendor/download'">Lưu</button>
-    </body>
+</table>
+<button id="button" onclick="window.location.href='/vendor/download'">Lưu</button>
+</body>
+
 </html>
 
 <script>
