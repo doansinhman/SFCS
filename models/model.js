@@ -446,7 +446,9 @@ module.exports.getReport = async(court_id) => {
                         let cart = JSON.parse(rows[i].list);
                         for (const key in cart) {
                             let food = await module.exports.getFoodById(key);
-                            if (food.court_id != court_id) continue;
+                            //if manager getReport, court_id = -1, manager get all item
+                            //else vendor get report, get vendor's items
+                            if (food.court_id != court_id && court_id != -1) continue;
                             report[count] = {
                                 id: key,
                                 name: food.name,

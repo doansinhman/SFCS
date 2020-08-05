@@ -1,9 +1,13 @@
+var compatibleSwal = swal.mixin({
+    heightAuto: false
+})
+var allUser = []
+
 async function showChangePassDialog() {
-    const { value: password } = await Swal.fire({
+    const { value: password } = await compatibleSwal.fire({
         title: 'Nhập mật khẩu mới',
         input: 'text',
         inputPlaceholder: 'Enter your password',
-        heightAuto: false
     })
     return password;
 };
@@ -12,7 +16,7 @@ function cpw() {
     showChangePassDialog().then(
         newpass => {
             if (newpass.length < 6) {
-                swal.fire("Độ dài mật khẩu phải từ 6 kí tự trở lên")
+                compatibleSwal.fire("Độ dài mật khẩu phải từ 6 kí tự trở lên")
                 return;
             }
             $.post('./api/ForceChangePass', {
@@ -22,11 +26,60 @@ function cpw() {
                 },
                 result => {
                     if (result == true) {
-                        swal.fire("Đổi mật khẩu thành công");
-                    } else swal.fire(result);
+                        compatibleSwal.fire("Đổi mật khẩu thành công");
+                    } else compatibleSwal.fire(result);
                 });
         }
     )
+}
+async function deleteStaff(c) {
+    var user = c.data[0];
+    var type = c.data[1];
+    var f = function(user, type) {
+        $.post('./api/DeleteStaff', { 'user_name': user.user_name, 'type': type },
+            result => {
+                if (result == true) {
+                    compatibleSwal.fire("Xoá thành công " + user.user_name)
+                        .then(() => location.reload());
+                }
+            });
+    }
+
+    compatibleSwal.fire({
+        title: "Xác nhận xoá " + user.user_name,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No',
+        heightAuto: false
+    }).then(result => { result.value ? f(user, type) : 0 })
+}
+
+function deleteMember(c) {
+    var user = c.data;
+    var f = function(user) {
+        $.post('./api/DeleteMember', { 'user_name': user.user_name },
+            result => {
+                if (result) {
+                    compatibleSwal.fire({
+                            title: "Xoá thành công thành viên " + user.user_name,
+
+                        })
+                        .then(() => location.reload());
+                }
+            });
+    }
+    compatibleSwal.fire({
+        title: "Xác nhận xoá " + user.user_name,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No',
+    }).then(result => { result.value ? f(user) : 0 })
 }
 
 function queryMember(ty) {
@@ -36,6 +89,7 @@ function queryMember(ty) {
     var usertable = document.getElementById('user-table');
     $.get(apiPath, data => {
         data.forEach(user => {
+            allUser.push(user.user_name);
             var row = usertable.insertRow(count++);
             row.insertCell().innerHTML = user.id;
             row.insertCell().innerHTML = user.full_name;
@@ -49,15 +103,7 @@ function queryMember(ty) {
                 '<button type=\'button\' id=\'ch-pass' + count + '\' class=\'btn-cp\'> Ch. Password </button>' +
                 '<button type=\'button\' id=\'del-usr' + count + '\' class=\'btn-cp\'> Delete </button>' +
                 '</td>';
-            $('#del-usr' + count).click(function() {
-                $.post('./api/DeleteMember', { 'user_name': user.user_name },
-                    result => {
-                        if (result) {
-                            swal.fire("Xoá thành công thành viên " + user_name)
-                                .then(() => location.reload());
-                        }
-                    });
-            });
+            $('#del-usr' + count).click(user, deleteMember);
             $('#ch-pass' + count).click(cpw);
         });
     });
@@ -70,6 +116,7 @@ function queryStaff(type) {
     var usertable = document.getElementById('user-table');
     $.get(apiPath, { ty: type }, data => {
         data.forEach(user => {
+            allUser.push(user.user_name);
             var row = usertable.insertRow(count++);
             switch (type) {
                 case 'cook': // court_id | user_name
@@ -123,22 +170,19 @@ function queryStaff(type) {
                 default:
                     row.innerHTML = "Default"
             }
-            $('#del-usr' + count).click(function() {
-                $.post('./api/DeleteStaff', { 'user_name': user.user_name, 'type': type },
-                    result => {
-                        if (result == true) {
-                            swal.fire("Xoá thành công " + user.user_name)
-                                .then(() => location.reload());
-                        }
-                    });
-            });
+            $('#del-usr' + count).click([user, type], deleteStaff);
             $('#ch-pass' + count).click(cpw);
         })
     })
 }
 async function addStaff(eobj) {
     var apiPath = './api/AddStaff';
-
+    var customswal = swal.mixin({
+        heightAuto: false,
+        customClass: {
+            input: 'custom-input'
+        }
+    })
     var type = eobj.data;
     console.log(type);
     var inputHtml = '<input id="swal-input_username" class="swal2-input" placeholder="Tên đăng nhập">' +
@@ -151,13 +195,14 @@ async function addStaff(eobj) {
             inputHtml = '<input id="swal-input_courtname" class="swal2-input" placeholder="Tên quầy hàng">' +
                 '<input id="swal-input_fullname" class="swal2-input" placeholder="Họ và Tên">' +
                 '<label class="radio-inline">' +
-                '<input id="swal-input_male" class="swal2-radio" type="radio" value="male" name="gender" checked>' + ' Nam ' +
+                '<input class="swal2-radio" type="radio" value="male" name="gender" checked>' + ' Nam ' +
                 '</label>' +
                 '<label class="radio-inline">' +
-                '<input id="swal-input_female" class="swal2-radio" type="radio" value="female" name=gender>' + ' Nữ ' +
+                '<input class="swal2-radio" type="radio" value="female" name=gender>' + ' Nữ ' +
                 '</label>' +
+                '<input id="swal-input_phone" class="swal2-input" placeholder="Số điện thoại">' +
                 '<input id="swal-input_birthday" class="swal2-input" type="date" placeholder="Ngày sinh">' +
-                '<input id="swal-input_email" class="swal2-input" placeholder="Email">' +
+                '<input id="swal-input_email" class="swal2-input" type="email" placeholder="Email">' +
                 inputHtml;
             break
         case "cashier":
@@ -167,17 +212,31 @@ async function addStaff(eobj) {
         default:
 
     }
-    var data = await swal.fire({
+    var data = await customswal.fire({
         title: "Đăng ký cho nhân viên mới",
         html: inputHtml,
         focusConfirm: false,
-        heightAuto: false,
+        showCancelButton: true,
+        reverseButtons: true,
         preConfirm: () => {
-            var preval = {
-                user_name: document.getElementById('swal-input_username').value,
-                password: document.getElementById('swal-input_password').value
-            }
-            if (typeof(preval.password) == 'undefined' || preval.password.length < 6) return false;
+            let metReq = true;
+            let preval = {
+                    user_name: document.getElementById('swal-input_username').value,
+                    password: document.getElementById('swal-input_password').value
+                }
+                // test
+            if (allUser.includes(preval.user_name)) {
+                document.getElementById('swal-input_username').style.outline = 'dashed red 2pt';
+                metReq = false;
+            } else document.getElementById('swal-input_username').style.outline = 'unset'
+
+            if (typeof(preval.password) == 'undefined' || preval.password.length < 6) {
+                document.getElementById('swal-input_password').style.outline = 'dashed red 2pt';
+                metReq = false;
+            } else document.getElementById('swal-input_password').style.outline = 'unset';
+
+            if (!metReq) return false;
+
             switch (type) {
                 case "cook":
                     preval.court_id = document.getElementById('swal-input_courtid').value
@@ -186,6 +245,7 @@ async function addStaff(eobj) {
                     preval.court_name = document.getElementById('swal-input_courtname').value
                     preval.gender = $("input:radio[name=gender]:checked").val()
                     preval.full_name = document.getElementById('swal-input_fullname').value
+                    preval.phone_number = document.getElementById('swal-input_phone').value
                     preval.birthday = document.getElementById('swal-input_birthday').value
                     preval.email = document.getElementById('swal-input_email').value
                     break
@@ -200,8 +260,8 @@ async function addStaff(eobj) {
     });
     $.post(apiPath, { type: type, data: JSON.stringify(data.value) },
         (msg) => {
-            if (msg == true) swal.fire("Tạo thành công")
-            else swal.fire("Tạo thất bại: " + msg)
+            if (msg == true) compatibleSwal.fire("Tạo thành công")
+            else compatibleSwal.fire("Tạo thất bại: " + msg)
         }, 'json'
     )
 
